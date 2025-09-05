@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - AttendIQ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>AttendIQ Faculty</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="#dashboard" class="nav-link">Dashboard</a>
+                <a href="#attendance" class="nav-link">Attendance</a>
+                <a href="#students" class="nav-link">Students</a>
+                <a href="#reports" class="nav-link">Reports</a>
+                <a href="login.html" class="nav-link btn-login" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="faculty-main">
+        <div class="container">
+            <div class="faculty-header">
+                <div class="header-content">
+                    <h1 class="gradient-title">Faculty Dashboard</h1>
+                    <p class="header-subtitle">Manage your classes, attendance, and student data</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-bubble">
+                        <span class="stat-number">20</span>
+                        <span class="stat-label">Students</span>
+                    </div>
+                    <div class="stat-bubble">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Classes</span>
+                    </div>
+                    <div class="stat-bubble">
+                        <span class="stat-number">80%</span>
+                        <span class="stat-label">Attendance</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="quickGenerateQR" class="btn btn-primary btn-3d">
+                            <i class="fas fa-qrcode"></i>
+                            <span>Generate QR Code</span>
+                        </button>
+                        <button id="quickTakeAttendance" class="btn btn-secondary btn-3d">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Take Attendance</span>
+                        </button>
+                        <button id="quickViewReports" class="btn btn-accent btn-3d">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>View Reports</span>
+                        </button>
+                        <button id="uploadExcelBtn" class="btn btn-primary btn-3d">
+                            <i class="fas fa-file-excel"></i>
+                            <span>Upload Student Excel</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Today's Classes</h3>
+                    </div>
+                    <div class="class-list">
+                        <div class="class-item glass-item">
+                            <div class="class-time">
+                                <span class="time-badge">9:00 AM</span>
+                            </div>
+                            <div class="class-details">
+                                <h4>Computer Science</h4>
+                                <p><i class="fas fa-map-marker-alt"></i> Room 101</p>
+                            </div>
+                            <div class="class-status active">Active</div>
+                        </div>
+                        <div class="class-item glass-item">
+                            <div class="class-time">
+                                <span class="time-badge">11:00 AM</span>
+                            </div>
+                            <div class="class-details">
+                                <h4>Mathematics</h4>
+                                <p><i class="fas fa-map-marker-alt"></i> Room 205</p>
+                            </div>
+                            <div class="class-status upcoming">Upcoming</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card glass-card student-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Student List (20 Students)</h3>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search students...">
+                            <button class="save-btn" onclick="saveAttendance()" title="Save Attendance">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="roster-toolbar" style="display:flex;gap:10px;margin:10px 0;flex-wrap:wrap;">
+                        <input id="addRoll" class="glass-select" placeholder="Roll e.g., 001" style="max-width:140px;">
+                        <input id="addName" class="glass-select" placeholder="Student name" style="flex:1;min-width:220px;">
+                        <button id="addStudentBtn" class="btn btn-primary btn-3d"><i class="fas fa-user-plus"></i><span>Add</span></button>
+                        <input id="importCSVInput" type="file" accept=".csv" style="display:none;" />
+                        <button id="importCSVBtn" class="btn btn-secondary btn-3d"><i class="fas fa-file-csv"></i><span>Import CSV</span></button>
+                        <button id="saveRosterBtn" class="btn btn-accent btn-3d"><i class="fas fa-cloud-upload-alt"></i><span>Save Roster</span></button>
+                    </div>
+                    <div id="studentList" class="student-list">
+                    <div class="student-filters">
+                        <div class="filter-group">
+                            <label>Filter by:</label>
+                            <select id="statusFilter" class="glass-select">
+                                <option value="all">All Students</option>
+                                <option value="present">Present</option>
+                                <option value="absent">Absent</option>
+                                <option value="late">Late</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Sort by:</label>
+                            <select id="sortBy" class="glass-select">
+                                <option value="roll">Roll Number</option>
+                                <option value="name">Name</option>
+                                <option value="attendance">Attendance %</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="student-table">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Last Check-in</th>
+                                    <th>Attendance %</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button id="prevPage" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-left"></i></button>
+                        <span id="pageInfo">Page 1 of 1</span>
+                        <button id="nextPage" class="btn btn-secondary btn-sm"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <div class="qr-container glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h2>QR Code Generator</h2>
+                    </div>
+                    <div class="qr-controls">
+                        <div class="select-wrapper">
+                            <select id="classSelect" class="form-select glass-select">
+                                <option value="">Select Class</option>
+                                <option value="cs101">Computer Science 101</option>
+                                <option value="math201">Mathematics 201</option>
+                                <option value="phy301">Physics 301</option>
+                            </select>
+                        </div>
+                        <input id="publicHost" class="glass-select" placeholder="Public host e.g., http://192.168.0.10:5500/" style="max-width:420px;" />
+                        <div class="button-group">
+                            <button id="generateQR" class="btn btn-primary btn-3d">
+                                <i class="fas fa-magic"></i>
+                                <span>Generate QR Code</span>
+                            </button>
+                            <button id="pauseQR" class="btn btn-secondary btn-3d" data-paused="false">
+                                <i class="fas fa-pause"></i>
+                                <span>Pause QR</span>
+                            </button>
+                            <button id="clearQR" class="btn btn-accent btn-3d">
+                                <i class="fas fa-trash"></i>
+                                <span>Clear</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="qrDisplay" class="qr-display glass-display">
+                        <div class="qr-placeholder">
+                            <div class="qr-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <p>Select class and generate QR code</p>
+                        </div>
+                    </div>
+                    
+                    <div id="classroomBox" class="classroom-box" style="display: none;">
+                        <div class="classroom-title">Classroom Attendance</div>
+                    </div>
+                    <div class="qr-info">
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span><strong>Expires in:</strong> <span id="qrTimer" class="timer">--:--</span></span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span><strong>Class:</strong> <span id="currentClass">None</span></span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-fingerprint"></i>
+                            <span><strong>Session:</strong> <span id="sessionId">-</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card live-feed">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h3>Live Scan Feed</h3>
+                </div>
+                <div class="feed-tools">
+                    <button id="exportCSV" class="btn btn-primary btn-3d"><i class="fas fa-file-export"></i><span>Export Attendance</span></button>
+                    <button id="simulateScan" class="btn btn-secondary btn-3d"><i class="fas fa-vial"></i><span>Simulate Scan</span></button>
+                    <div class="note-wrap">
+                        <input id="classNote" class="glass-select" placeholder="Add class note (e.g., Lab session, late start)" />
+                        <button id="saveNote" class="btn btn-accent btn-3d"><i class="fas fa-note-sticky"></i><span>Save Note</span></button>
+                    </div>
+                </div>
+                <div class="feed-header">
+                    <h4>Live Attendance Feed</h4>
+                    <div class="feed-stats">
+                        <span class="feed-stat"><i class="fas fa-user-check"></i> <span id="livePresent">0</span> Present</span>
+                        <span class="feed-stat"><i class="fas fa-user-times"></i> <span id="liveAbsent">0</span> Absent</span>
+                        <span class="feed-stat"><i class="fas fa-user-clock"></i> <span id="liveLate">0</span> Late</span>
+                    </div>
+                </div>
+                <div id="scanFeed" class="feed-list">
+                </div>
+                <div id="alertBar" class="alert-bar" style="display:none;"></div>
+                <div class="real-time-controls">
+                    <button id="refreshFeed" class="btn btn-secondary btn-sm"><i class="fas fa-sync"></i> Refresh</button>
+                    <div class="auto-refresh">
+                        <label>Auto-refresh:</label>
+                        <select id="refreshInterval" class="glass-select">
+                            <option value="0">Off</option>
+                            <option value="5000" selected>5 seconds</option>
+                            <option value="10000">10 seconds</option>
+                            <option value="30000">30 seconds</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card glass-card controls-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-sliders-h"></i></div>
+                        <h3>Teacher Controls</h3>
+                    </div>
+                    <div class="controls-grid">
+                        <div class="override">
+                            <h4>Manual Override</h4>
+                            <div class="override-form">
+                                <input id="overrideRoll" class="glass-select" placeholder="Roll e.g., 012" />
+                                <select id="overrideStatus" class="glass-select">
+                                    <option value="Present">Present</option>
+                                    <option value="Absent">Absent</option>
+                                </select>
+                                <button id="applyOverride" class="btn btn-primary btn-3d"><i class="fas fa-check-double"></i><span>Apply</span></button>
+                            </div>
+                        </div>
+                        <div class="qr-toggle">
+                            <h4>QR Control</h4>
+                            <button id="toggleQRBtn" class="btn btn-secondary btn-3d"><i class="fas fa-ban"></i><span>Disable for 30s</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card glass-card analytics-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>Analytics & Insights</h3>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="mini-analytic">
+                            <span class="label">Average Attendance</span>
+                            <span id="avgAttendance" class="value">--%</span>
+                        </div>
+                        <div class="mini-analytic">
+                            <span class="label">Under 75% Alerts</span>
+                            <span id="under75" class="value">0</span>
+                        </div>
+                        <div class="mini-analytic">
+                            <span class="label">Consistent Late Joiners</span>
+                            <span id="lateJoiners" class="value">0</span>
+                        </div>
+                        <div class="mini-analytic">
+                            <span class="label">Top Consistent</span>
+                            <span id="leaderboardTop" class="value">-</span>
+                        </div>
+                    </div>
+                    <div class="analytics-charts">
+                        <div class="chart-container">
+                            <h4><i class="fas fa-chart-pie"></i> Attendance Distribution</h4>
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h4><i class="fas fa-chart-line"></i> Weekly Trend</h4>
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="analytic-lists">
+                        <div>
+                            <h4><i class="fas fa-triangle-exclamation"></i> < 75% Students</h4>
+                            <ul id="under75List" class="list"></ul>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-user-clock"></i> Late Joiners</h4>
+                            <ul id="lateList" class="list"></ul>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-trophy"></i> Leaderboard</h4>
+                            <ul id="leaderboardList" class="list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="attendance-section">
+                <div class="section-header">
+                    <h2 class="gradient-title">Attendance Management</h2>
+                    <p>Real-time attendance tracking and analytics</p>
+                </div>
+                <div class="attendance-stats">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total Students</h3>
+                            <span class="stat-number">20</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Present Today</h3>
+                            <span class="stat-number">16</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar present" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Absent Today</h3>
+                            <span class="stat-number">4</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar absent" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Attendance Rate</h3>
+                            <span class="stat-number">80%</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar rate" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="excelUploadModal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Upload Student Excel</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Upload an Excel file (.xlsx or .csv) with student information. The file should have columns for Name and Email.</p>
+                <div class="upload-area">
+                    <input type="file" id="excelFileInput" accept=".xlsx, .csv" style="display: none;">
+                    <button id="selectFileBtn" class="btn btn-secondary btn-3d">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Select File</span>
+                    </button>
+                    <div id="selectedFileName" class="selected-file">No file selected</div>
+                </div>
+                <div class="template-download">
+                    <p>Download template: <a href="#" id="downloadTemplate">Student_Template.xlsx</a></p>
+                </div>
+                <div id="excelPreview" class="excel-preview" style="display: none;">
+                    <h3>Preview</h3>
+                    <div class="table-container">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody">
+                                <!-- Preview data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelUploadBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmUploadBtn" class="btn btn-primary btn-3d">
+                    <i class="fas fa-check"></i>
+                    <span>Upload and Generate QR</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        /* Classroom Box Visualization */
+        .classroom-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .classroom-title {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--card-bg);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .student-bubble {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(59,130,246,0.7), rgba(139,92,246,0.7));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .student-bubble.present {
+            animation: burst 0.5s ease-out forwards;
+        }
+        
+        @keyframes burst {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        
+        .student-info {
+            padding: 5px;
+            word-break: break-word;
+            max-width: 100%;
+        }
+    </style>
+    
+    <script>
+        // =========== QR: Dynamic token + geo + auto-rotate colors ==========
+        let qrIntervalRef = null;
+        let qrTimerRef = null;
+        let currentSessionId = null;
+        let sessionSecret = null; // in-memory secret for HMAC-like signature
+        let lastGeneratedPayload = null;
+        const usedNonces = new Set(); // replay protection for current session
+        const qrColors = [
+            'linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.25))',
+            'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(59,130,246,0.25))',
+            'linear-gradient(135deg, rgba(236,72,153,0.25), rgba(249,115,22,0.25))'
+        ];
+        let qrColorIndex = 0;
+        
+        // Excel Upload Modal
+        const excelModal = document.getElementById('excelUploadModal');
+        const closeBtn = document.querySelector('.close');
+        const uploadExcelBtn = document.getElementById('uploadExcelBtn');
+        const selectFileBtn = document.getElementById('selectFileBtn');
+        const excelFileInput = document.getElementById('excelFileInput');
+        const selectedFileName = document.getElementById('selectedFileName');
+        const confirmUploadBtn = document.getElementById('confirmUploadBtn');
+        const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+        const downloadTemplateBtn = document.getElementById('downloadTemplate');
+        const excelPreview = document.getElementById('excelPreview');
+        const previewTableBody = document.getElementById('previewTableBody');
+        
+        // Store uploaded student data
+        let uploadedStudents = [];
+        let qrExpiryTime = null;
+        
+        // Excel Upload Modal Event Handlers
+        uploadExcelBtn.addEventListener('click', function() {
+            excelModal.style.display = 'block';
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            excelModal.style.display = 'none';
+        });
+        
+        cancelUploadBtn.addEventListener('click', function() {
+            excelModal.style.display = 'none';
+        });
+        
+        selectFileBtn.addEventListener('click', function() {
+            excelFileInput.click();
+        });
+        
+        excelFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFileName.textContent = file.name;
+                readExcelFile(file);
+            } else {
+                selectedFileName.textContent = 'No file selected';
+                excelPreview.style.display = 'none';
+            }
+        });
+        
+        downloadTemplateBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            generateExcelTemplate();
+        });
+        
+        confirmUploadBtn.addEventListener('click', function() {
+            if (uploadedStudents.length > 0) {
+                // Save students to session storage
+                sessionStorage.setItem('currentSessionStudents', JSON.stringify(uploadedStudents));
+                
+                // Close modal
+                excelModal.style.display = 'none';
+                
+                // Generate QR code
+                document.getElementById('generateQR').click();
+            } else {
+                showAlert('Please upload a valid student list first', 'error');
+            }
+        });
+        
+        // Function to read Excel file
+        function readExcelFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                // Get first sheet
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                
+                // Process data
+                processExcelData(jsonData);
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Function to process Excel data
+        function processExcelData(data) {
+            // Clear previous data
+            uploadedStudents = [];
+            previewTableBody.innerHTML = '';
+            
+            // Check if data has headers
+            if (data.length < 2) {
+                showAlert('Excel file must contain headers and at least one student', 'error');
+                return;
+            }
+            
+            // Get headers
+            const headers = data[0];
+            
+            // Find name and email columns
+            const nameIndex = headers.findIndex(h => h && h.toString().toLowerCase().includes('name'));
+            const emailIndex = headers.findIndex(h => h && h.toString().toLowerCase().includes('email'));
+            const rollIndex = headers.findIndex(h => h && h.toString().toLowerCase().includes('roll'));
+            
+            if (nameIndex === -1 || emailIndex === -1) {
+                showAlert('Excel file must contain Name and Email columns', 'error');
+                return;
+            }
+            
+            // Process rows
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                if (row.length > 0) {
+                    const student = {
+                        roll: rollIndex !== -1 ? row[rollIndex] : i.toString().padStart(3, '0'),
+                        name: row[nameIndex],
+                        email: row[emailIndex],
+                        status: 'absent' // Default status
+                    };
+                    
+                    // Add to uploaded students
+                    uploadedStudents.push(student);
+                    
+                    // Add to preview table
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${student.roll}</td>
+                        <td>${student.name}</td>
+                        <td>${student.email}</td>
+                    `;
+                    previewTableBody.appendChild(tr);
+                }
+            }
+            
+            // Show preview
+            excelPreview.style.display = 'block';
+            
+            // Enable confirm button if we have students
+            confirmUploadBtn.disabled = uploadedStudents.length === 0;
+        }
+        
+        // Function to generate Excel template
+        function generateExcelTemplate() {
+            const ws = XLSX.utils.aoa_to_sheet([
+                ['Roll', 'Name', 'Email'],
+                ['001', 'John Doe', 'john@example.com'],
+                ['002', 'Jane Smith', 'jane@example.com']
+            ]);
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Students');
+            
+            XLSX.writeFile(wb, 'Student_Template.xlsx');
+        }
+
+        document.getElementById('generateQR').addEventListener('click', async function() {
+            const classSelect = document.getElementById('classSelect');
+            const selectedClass = classSelect.value;
+            if (!selectedClass) { alert('Please select a class first!'); return; }
+
+            // Security placeholder: biometric confirm
+            if (!confirm('Confirm biometric/identity to generate QR?')) return;
+
+            // New session key per generation
+            currentSessionId = 'SES-' + Math.random().toString(36).slice(2, 10).toUpperCase();
+            sessionSecret = Math.random().toString(36).slice(2) + Date.now();
+            document.getElementById('sessionId').textContent = currentSessionId;
+            
+            // Check if we have uploaded students for this session
+            const sessionStudents = sessionStorage.getItem('currentSessionStudents');
+            if (sessionStudents) {
+                uploadedStudents = JSON.parse(sessionStudents);
+                // Update the live feed with initial absent status
+                updateLiveFeedWithStudents();
+                
+                // Initialize and show classroom box
+                initializeClassroomBox();
+                showClassroomBox();
+            }
+
+            await generateAndRenderQR();
+            startAutoRefresh();
+            
+            // Set QR expiry time (2 minutes from now)
+            qrExpiryTime = new Date(Date.now() + 2 * 60 * 1000);
+            
+            // Set timer to mark absent students when QR expires
+            setTimeout(() => {
+                markRemainingAbsent();
+                // Generate attendance report when QR expires
+                generateAttendanceReport();
+            }, 2 * 60 * 1000);
+        });
+
+        document.getElementById('pauseQR').addEventListener('click', function() {
+            const paused = this.getAttribute('data-paused') === 'true';
+            if (paused) {
+                startAutoRefresh();
+                this.setAttribute('data-paused', 'false');
+                this.innerHTML = '<i class="fas fa-pause"></i><span>Pause QR</span>';
+            } else {
+                stopAutoRefresh();
+                this.setAttribute('data-paused', 'true');
+                this.innerHTML = '<i class="fas fa-play"></i><span>Resume QR</span>';
+            }
+        });
+        
+        document.getElementById('clearQR').addEventListener('click', function() {
+            const qrDisplay = document.getElementById('qrDisplay');
+            qrDisplay.innerHTML = `
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode"></i>
+                    <p>Select class and generate QR code</p>
+                </div>
+            `;
+            document.getElementById('currentClass').textContent = 'None';
+            document.getElementById('qrTimer').textContent = '--:--';
+            document.getElementById('sessionId').textContent = '-';
+            usedNonces.clear();
+            sessionSecret = null;
+            stopAutoRefresh();
+        });
+
+        function stopAutoRefresh() {
+            if (qrIntervalRef) { clearInterval(qrIntervalRef); qrIntervalRef = null; }
+            if (qrTimerRef) { clearInterval(qrTimerRef); qrTimerRef = null; }
+        }
+
+        function startAutoRefresh() {
+            stopAutoRefresh();
+            // immediate countdown (60s)
+            startCountdown(60);
+            // refresh QR every 60s
+            qrIntervalRef = setInterval(async () => {
+                await generateAndRenderQR();
+                startCountdown(60);
+            }, 60000);
+        }
+
+        function startCountdown(seconds) {
+            const timerElement = document.getElementById('qrTimer');
+            let timeLeft = seconds;
+            qrTimerRef = setInterval(() => {
+                const m = Math.floor(timeLeft/60); const s = timeLeft % 60;
+                timerElement.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+                timeLeft--;
+                if (timeLeft < 0) { clearInterval(qrTimerRef); timerElement.textContent = 'Expired'; }
+            }, 1000);
+        }
+
+        async function generateAndRenderQR() {
+            const classSelect = document.getElementById('classSelect');
+            const className = classSelect.options[classSelect.selectedIndex].text;
+            document.getElementById('currentClass').textContent = className;
+
+            // geolocation + salted token + gps hash
+            let coords = null;
+            try {
+                coords = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(p => resolve({lat: p.coords.latitude, lon: p.coords.longitude}), reject, {enableHighAccuracy: true, timeout: 5000});
+                });
+            } catch(e) {
+                // fallback mock
+                coords = {lat: 0, lon: 0};
+            }
+            const payload = {
+                sessionId: currentSessionId,
+                classId: classSelect.value,
+                ts: Date.now(),
+                salt: Math.random().toString(36).slice(2),
+                lat: coords.lat,
+                lon: coords.lon,
+                nonce: Math.random().toString(36).slice(2,10)
+            };
+            payload.gpsHash = await sha256(`${payload.lat.toFixed(5)}:${payload.lon.toFixed(5)}:${payload.salt}`);
+            // signature using sessionSecret (not shared elsewhere)
+            const sigBase = `${payload.sessionId}|${payload.classId}|${payload.ts}|${payload.lat}|${payload.lon}|${payload.nonce}|${payload.gpsHash}|${sessionSecret}`;
+            payload.sig = await sha256(sigBase);
+            const encoded = btoa(JSON.stringify(payload));
+            lastGeneratedPayload = payload;
+
+            // rotate color
+            const bg = qrColors[qrColorIndex % qrColors.length];
+            qrColorIndex++;
+            const qrDisplay = document.getElementById('qrDisplay');
+            // Build a URL that phone can reach. Prefer teacher-provided public host.
+            let base = (localStorage.getItem('publicHost') || document.getElementById('publicHost').value || '').trim();
+            if (base && !base.endsWith('/')) base += '/';
+            if (!base) {
+                // fallback to current if http(s), else show hint
+                if (location.protocol.startsWith('http')) {
+                    base = location.origin + location.pathname.replace('faculty-dashboard.html','');
+                } else {
+                    alert('Tip: Phone scan ke liye Public host set karein (e.g., http://<LAN-IP>:5500/)');
+                    base = '';
+                }
+            }
+            // persist host
+            if (document.getElementById('publicHost').value) {
+                localStorage.setItem('publicHost', document.getElementById('publicHost').value.trim());
+            } else {
+                document.getElementById('publicHost').value = localStorage.getItem('publicHost') || '';
+            }
+            const url = `${base}student-checkin.html?t=${encodeURIComponent(encoded)}`;
+            qrDisplay.innerHTML = `
+                <div class="qr-code" style="background:${bg};border-radius:16px;padding:20px;">
+                    <div id="qrCanvas" class="qr-image" style="display:flex;align-items:center;justify-content:center;border:1px dashed rgba(255,255,255,0.3);border-radius:12px;background:#ffffff;"></div>
+                    <p style="margin-top:10px;color:var(--gray-text);font-size:0.85rem;">Scan to open check‑in</p>
+                    <details style="margin-top:6px;">
+                        <summary style="cursor:pointer;color:var(--primary-color);">View URL (dev)</summary>
+                        <code style="font-size:0.75rem;word-break:break-all;">${url}</code>
+                    </details>
+                </div>`;
+            // render real QR
+            const size = 256;
+            const canvasHost = document.getElementById('qrCanvas');
+            canvasHost.innerHTML = '';
+            new QRCode(canvasHost, {text: url, width: size, height: size, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M});
+        }
+
+        async function sha256(str){
+            const enc = new TextEncoder().encode(str);
+            const buf = await crypto.subtle.digest('SHA-256', enc);
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        // Function to update live feed with students
+        function updateLiveFeedWithStudents() {
+            const liveFeed = document.getElementById('liveFeed');
+            liveFeed.innerHTML = ''; // Clear existing feed
+            
+            // Update counters
+            let presentCount = 0;
+            let absentCount = 0;
+            
+            // Add each student to the feed
+            uploadedStudents.forEach(student => {
+                const statusClass = student.status === 'present' ? 'status-present' : 'status-absent';
+                const statusIcon = student.status === 'present' ? 'check-circle' : 'times-circle';
+                
+                const entryElement = document.createElement('div');
+                entryElement.className = `feed-entry ${statusClass}`;
+                entryElement.id = `student-${student.email.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                
+                entryElement.innerHTML = `
+                    <div class="status-icon">
+                        <i class="fas fa-${statusIcon}"></i>
+                    </div>
+                    <div class="entry-details">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-email">${student.email}</div>
+                        <div class="timestamp">${student.status === 'present' ? student.timestamp || '' : ''}</div>
+                    </div>
+                `;
+                
+                liveFeed.appendChild(entryElement);
+                
+                // Update counters
+                if (student.status === 'present') {
+                    presentCount++;
+                } else {
+                    absentCount++;
+                }
+            });
+            
+            // Update stats
+            document.getElementById('presentCount').textContent = presentCount;
+            document.getElementById('absentCount').textContent = absentCount;
+            document.getElementById('totalStudents').textContent = uploadedStudents.length;
+            
+            // Update attendance rate
+            const attendanceRate = uploadedStudents.length > 0 ? 
+                Math.round((presentCount / uploadedStudents.length) * 100) : 0;
+            document.getElementById('attendanceRate').textContent = `${attendanceRate}%`;
+        }
+        
+        // Function to mark a student as present
+        function markStudentPresent(email, timestamp) {
+            const studentIndex = uploadedStudents.findIndex(s => s.email.toLowerCase() === email.toLowerCase());
+            
+            if (studentIndex !== -1) {
+                uploadedStudents[studentIndex].status = 'present';
+                uploadedStudents[studentIndex].timestamp = timestamp || new Date().toLocaleTimeString();
+                
+                // Update the live feed
+                updateLiveFeedWithStudents();
+                
+                // Show alert
+                showAlert(`${uploadedStudents[studentIndex].name} marked present`, 'success');
+                
+                // Save updated students to session storage
+                sessionStorage.setItem('currentSessionStudents', JSON.stringify(uploadedStudents));
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Function to mark remaining students as absent when QR expires
+        function markRemainingAbsent() {
+            if (uploadedStudents.length === 0) return;
+            
+            // Mark all absent students
+            let absentCount = 0;
+            uploadedStudents.forEach(student => {
+                if (student.status !== 'present') {
+                    student.status = 'absent';
+                    absentCount++;
+                }
+            });
+            
+            // Update the live feed
+            updateLiveFeedWithStudents();
+            
+            // Show alert
+            if (absentCount > 0) {
+                showAlert(`Attendance closed. ${absentCount} students marked absent.`, 'warning');
+            }
+            
+            // Save updated students to session storage
+            sessionStorage.setItem('currentSessionStudents', JSON.stringify(uploadedStudents));
+            
+            // Generate Excel report
+            generateAttendanceReport();
+        }
+        
+        // Function to generate attendance report as Excel
+        function generateAttendanceReport() {
+            if (uploadedStudents.length === 0) return;
+            
+            // Prepare data for Excel
+            const data = [
+                ['Roll', 'Name', 'Email', 'Status', 'Timestamp']
+            ];
+            
+            uploadedStudents.forEach(student => {
+                data.push([
+                    student.roll,
+                    student.name,
+                    student.email,
+                    student.status.toUpperCase(),
+                    student.timestamp || ''
+                ]);
+            });
+            
+            // Create worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
+            
+            // Generate filename with date and time
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            const filename = `Attendance_${dateStr}_${timeStr}.xlsx`;
+            
+            // Write file
+            XLSX.writeFile(wb, filename);
+            
+            // Show alert
+            showAlert(`Attendance report generated: ${filename}`, 'success');
+        }
+        
+        // Student List Management
+        let students = [];
+        let currentPage = 1;
+        const studentsPerPage = 10;
+        
+        // Sample data for demonstration
+        function loadSampleStudents() {
+            students = [
+                { roll: '001', name: 'Aditya Sharma', status: 'present', lastCheckin: '09:15 AM', attendanceRate: 95 },
+                { roll: '002', name: 'Priya Patel', status: 'present', lastCheckin: '09:05 AM', attendanceRate: 98 },
+                { roll: '003', name: 'Rahul Singh', status: 'absent', lastCheckin: 'N/A', attendanceRate: 75 },
+                { roll: '004', name: 'Neha Gupta', status: 'present', lastCheckin: '09:10 AM', attendanceRate: 92 },
+                { roll: '005', name: 'Vikram Mehta', status: 'late', lastCheckin: '09:25 AM', attendanceRate: 85 },
+                { roll: '006', name: 'Anjali Desai', status: 'present', lastCheckin: '09:08 AM', attendanceRate: 90 },
+                { roll: '007', name: 'Sanjay Kumar', status: 'absent', lastCheckin: 'N/A', attendanceRate: 65 },
+                { roll: '008', name: 'Meera Reddy', status: 'present', lastCheckin: '09:12 AM', attendanceRate: 88 },
+                { roll: '009', name: 'Arjun Nair', status: 'late', lastCheckin: '09:30 AM', attendanceRate: 78 },
+                { roll: '010', name: 'Divya Sharma', status: 'present', lastCheckin: '09:07 AM', attendanceRate: 94 },
+                { roll: '011', name: 'Rajesh Khanna', status: 'absent', lastCheckin: 'N/A', attendanceRate: 70 },
+                { roll: '012', name: 'Sunita Verma', status: 'present', lastCheckin: '09:03 AM', attendanceRate: 96 },
+            ];
+            renderStudentTable();
+            updateAnalytics();
+        }
+        
+        function renderStudentTable() {
+            const tableBody = document.getElementById('studentTableBody');
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            // Filter students
+            let filteredStudents = students;
+            if (statusFilter !== 'all') {
+                filteredStudents = students.filter(student => student.status === statusFilter);
+            }
+            
+            // Sort students
+            filteredStudents.sort((a, b) => {
+                if (sortBy === 'roll') {
+                    return a.roll.localeCompare(b.roll);
+                } else if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === 'attendance') {
+                    return b.attendanceRate - a.attendanceRate;
+                }
+                return 0;
+            });
+            
+            // Pagination
+            const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+            if (currentPage > totalPages) {
+                currentPage = totalPages || 1;
+            }
+            
+            const start = (currentPage - 1) * studentsPerPage;
+            const end = start + studentsPerPage;
+            const paginatedStudents = filteredStudents.slice(start, end);
+            
+            // Update page info
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
+            
+            // Render table
+            tableBody.innerHTML = '';
+            paginatedStudents.forEach(student => {
+                const row = document.createElement('tr');
+                
+                // Status class
+                let statusClass = '';
+                if (student.status === 'present') statusClass = 'status-present';
+                else if (student.status === 'absent') statusClass = 'status-absent';
+                else if (student.status === 'late') statusClass = 'status-late';
+                
+                // Attendance rate class
+                let attendanceClass = '';
+                if (student.attendanceRate >= 90) attendanceClass = 'rate-excellent';
+                else if (student.attendanceRate >= 75) attendanceClass = 'rate-good';
+                else attendanceClass = 'rate-poor';
+                
+                row.innerHTML = `
+                    <td>${student.roll}</td>
+                    <td>${student.name}</td>
+                    <td><span class="status-badge ${statusClass}">${student.status}</span></td>
+                    <td>${student.lastCheckin}</td>
+                    <td><span class="attendance-rate ${attendanceClass}">${student.attendanceRate}%</span></td>
+                    <td>
+                        <button class="btn btn-icon" title="View Details"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-icon" title="Edit Student"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-icon" title="Override Status"><i class="fas fa-exchange-alt"></i></button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Analytics and Charts
+        function updateAnalytics() {
+            // Update mini analytics
+            const presentCount = students.filter(s => s.status === 'present').length;
+            const absentCount = students.filter(s => s.status === 'absent').length;
+            const lateCount = students.filter(s => s.status === 'late').length;
+            const totalCount = students.length;
+            
+            document.getElementById('livePresent').textContent = presentCount;
+            document.getElementById('liveAbsent').textContent = absentCount;
+            document.getElementById('liveLate').textContent = lateCount;
+            
+            // Calculate average attendance
+            const avgAttendance = students.reduce((sum, student) => sum + student.attendanceRate, 0) / totalCount;
+            document.getElementById('avgAttendance').textContent = `${avgAttendance.toFixed(1)}%`;
+            
+            // Under 75% students
+            const under75Students = students.filter(s => s.attendanceRate < 75);
+            document.getElementById('under75').textContent = under75Students.length;
+            
+            const under75List = document.getElementById('under75List');
+            under75List.innerHTML = '';
+            under75Students.forEach(student => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${student.name}</span> <span class="list-value">${student.attendanceRate}%</span>`;
+                under75List.appendChild(li);
+            });
+            
+            // Late joiners
+            const lateJoiners = students.filter(s => s.status === 'late');
+            document.getElementById('lateJoiners').textContent = lateJoiners.length;
+            
+            const lateList = document.getElementById('lateList');
+            lateList.innerHTML = '';
+            lateJoiners.forEach(student => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${student.name}</span> <span class="list-value">${student.lastCheckin}</span>`;
+                lateList.appendChild(li);
+            });
+            
+            // Leaderboard
+            const topStudents = [...students].sort((a, b) => b.attendanceRate - a.attendanceRate).slice(0, 5);
+            document.getElementById('leaderboardTop').textContent = topStudents[0]?.name || '-';
+            
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '';
+            topStudents.forEach(student => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${student.name}</span> <span class="list-value">${student.attendanceRate}%</span>`;
+                leaderboardList.appendChild(li);
+            });
+            
+            // Render charts
+            renderAttendanceChart();
+            renderTrendChart();
+        }
+        
+        function renderAttendanceChart() {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            
+            // Count students by status
+            const presentCount = students.filter(s => s.status === 'present').length;
+            const absentCount = students.filter(s => s.status === 'absent').length;
+            const lateCount = students.filter(s => s.status === 'late').length;
+            
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded yet');
+                return;
+            }
+            
+            // Create or update chart
+            if (window.attendanceChart) {
+                window.attendanceChart.data.datasets[0].data = [presentCount, absentCount, lateCount];
+                window.attendanceChart.update();
+            } else {
+                window.attendanceChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Present', 'Absent', 'Late'],
+                        datasets: [{
+                            data: [presentCount, absentCount, lateCount],
+                            backgroundColor: ['#22c55e', '#ef4444', '#f97316'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#f8fafc'
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        }
+        
+        function renderTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            // Sample weekly data
+            const weeklyData = [
+                { day: 'Mon', present: 18, absent: 2 },
+                { day: 'Tue', present: 17, absent: 3 },
+                { day: 'Wed', present: 16, absent: 4 },
+                { day: 'Thu', present: 19, absent: 1 },
+                { day: 'Fri', present: 15, absent: 5 },
+            ];
+            
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded yet');
+                return;
+            }
+            
+            // Create or update chart
+            if (window.trendChart) {
+                window.trendChart.data.datasets[0].data = weeklyData.map(d => d.present);
+                window.trendChart.data.datasets[1].data = weeklyData.map(d => d.absent);
+                window.trendChart.update();
+            } else {
+                window.trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: weeklyData.map(d => d.day),
+                        datasets: [
+                            {
+                                label: 'Present',
+                                data: weeklyData.map(d => d.present),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Absent',
+                                data: weeklyData.map(d => d.absent),
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                                tension: 0.3,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#94a3b8'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#94a3b8'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#f8fafc'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Real-time attendance tracking
+        let autoRefreshInterval = null;
+        
+        function startAutoRefresh() {
+            const interval = parseInt(document.getElementById('refreshInterval').value);
+            if (interval > 0) {
+                stopAutoRefresh();
+                autoRefreshInterval = setInterval(refreshAttendanceData, interval);
+            }
+        }
+        
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+        
+        function refreshAttendanceData() {
+            // In a real app, this would fetch data from a server
+            // For demo, we'll simulate new check-ins
+            simulateScan();
+        }
+        
+        function simulateScan() {
+            const scanFeed = document.getElementById('scanFeed');
+            const alertBar = document.getElementById('alertBar');
+            
+            // Random student from our list
+            const randomIndex = Math.floor(Math.random() * students.length);
+            const student = students[randomIndex];
+            
+            // Random status (mostly present)
+            const statuses = ['present', 'present', 'present', 'present', 'late', 'absent'];
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            
+            // Update student status
+            student.status = randomStatus;
+            student.lastCheckin = randomStatus !== 'absent' ? 
+                `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')} ${new Date().getHours() >= 12 ? 'PM' : 'AM'}` : 
+                'N/A';
+            
+            // Create scan entry
+            const entry = document.createElement('div');
+            entry.className = `scan-entry ${randomStatus}`;
+            
+            let statusIcon = '';
+            if (randomStatus === 'present') statusIcon = '<i class="fas fa-check-circle"></i>';
+            else if (randomStatus === 'absent') statusIcon = '<i class="fas fa-times-circle"></i>';
+            else if (randomStatus === 'late') statusIcon = '<i class="fas fa-exclamation-circle"></i>';
+            
+            entry.innerHTML = `
+                <div class="scan-status">${statusIcon}</div>
+                <div class="scan-details">
+                    <h4>${student.name} (${student.roll})</h4>
+                    <p>${randomStatus.toUpperCase()} at ${student.lastCheckin}</p>
+                </div>
+                <div class="scan-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            
+            // Add to feed
+            scanFeed.insertBefore(entry, scanFeed.firstChild);
+            
+            // Limit feed entries
+            if (scanFeed.children.length > 10) {
+                scanFeed.removeChild(scanFeed.lastChild);
+            }
+            
+            // Show alert for absent students
+            if (randomStatus === 'absent') {
+                alertBar.style.display = 'block';
+                alertBar.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Alert: ${student.name} (${student.roll}) marked as absent`;
+                
+                // Hide alert after 5 seconds
+                setTimeout(() => {
+                    alertBar.style.display = 'none';
+                }, 5000);
+            }
+            
+            // Update table and analytics
+            renderStudentTable();
+            updateAnalytics();
+        }
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add a small delay to ensure Chart.js is fully loaded
+            setTimeout(() => {
+                // Load sample data
+                loadSampleStudents();
+            
+            // Student list filters
+            document.getElementById('statusFilter').addEventListener('change', renderStudentTable);
+            document.getElementById('sortBy').addEventListener('change', renderStudentTable);
+            
+            // Pagination
+            document.getElementById('prevPage').addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderStudentTable();
+                }
+            });
+            
+            document.getElementById('nextPage').addEventListener('click', function() {
+                const totalPages = Math.ceil(students.length / studentsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderStudentTable();
+                }
+            });
+            
+            // Add student
+            document.getElementById('addStudentBtn').addEventListener('click', function() {
+                const roll = document.getElementById('addRoll').value.trim();
+                const name = document.getElementById('addName').value.trim();
+                
+                if (roll && name) {
+                    // Check if roll already exists
+                    if (students.some(s => s.roll === roll)) {
+                        alert('Roll number already exists!');
+                        return;
+                    }
+                    
+                    // Add new student
+                    students.push({
+                        roll,
+                        name,
+                        status: 'absent',
+                        lastCheckin: 'N/A',
+                        attendanceRate: 0
+                    });
+                    
+                    // Clear inputs
+                    document.getElementById('addRoll').value = '';
+                    document.getElementById('addName').value = '';
+                    
+                    // Update table and analytics
+                    renderStudentTable();
+                    updateAnalytics();
+                } else {
+                    alert('Please enter both roll number and name!');
+                }
+            });
+            
+            // Import CSV
+            document.getElementById('importCSVBtn').addEventListener('click', function() {
+                document.getElementById('importCSVInput').click();
+            });
+            
+            document.getElementById('importCSVInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const csv = event.target.result;
+                        const lines = csv.split('\n');
+                        
+                        // Skip header row
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (line) {
+                                const [roll, name] = line.split(',');
+                                
+                                // Check if roll already exists
+                                if (!students.some(s => s.roll === roll)) {
+                                    students.push({
+                                        roll,
+                                        name,
+                                        status: 'absent',
+                                        lastCheckin: 'N/A',
+                                        attendanceRate: 0
+                                    });
+                                }
+                            }
+                        }
+                        
+                        // Update table and analytics
+                        renderStudentTable();
+                        updateAnalytics();
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            
+            // Save roster
+            document.getElementById('saveRosterBtn').addEventListener('click', function() {
+                alert('Roster saved successfully!');
+            });
+            
+            // Simulate scan
+            document.getElementById('simulateScan').addEventListener('click', simulateScan);
+            
+            // Export CSV
+            document.getElementById('exportCSV').addEventListener('click', function() {
+                let csv = 'Roll,Name,Status,LastCheckin,AttendanceRate\n';
+                
+                students.forEach(student => {
+                    csv += `${student.roll},${student.name},${student.status},${student.lastCheckin},${student.attendanceRate}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'attendance_export.csv';
+                a.click();
+                
+                URL.revokeObjectURL(url);
+            });
+            
+            // Refresh feed
+            document.getElementById('refreshFeed').addEventListener('click', refreshAttendanceData);
+            
+            // Auto-refresh
+            document.getElementById('refreshInterval').addEventListener('change', startAutoRefresh);
+            startAutoRefresh();
+            
+            // Override status
+            document.getElementById('applyOverride').addEventListener('click', function() {
+                const roll = document.getElementById('overrideRoll').value.trim();
+                const status = document.getElementById('overrideStatus').value;
+                
+                if (roll) {
+                    const student = students.find(s => s.roll === roll);
+                    if (student) {
+                        student.status = status.toLowerCase();
+                        student.lastCheckin = status.toLowerCase() !== 'absent' ? 
+                            `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')} ${new Date().getHours() >= 12 ? 'PM' : 'AM'}` : 
+                            'N/A';
+                        
+                        // Update table and analytics
+                        renderStudentTable();
+                        updateAnalytics();
+                        
+                        // Show in feed
+                        const scanFeed = document.getElementById('scanFeed');
+                        const entry = document.createElement('div');
+                        entry.className = `scan-entry ${status.toLowerCase()}`;
+                        
+                        let statusIcon = '';
+                        if (status.toLowerCase() === 'present') statusIcon = '<i class="fas fa-check-circle"></i>';
+                        else if (status.toLowerCase() === 'absent') statusIcon = '<i class="fas fa-times-circle"></i>';
+                        
+                        entry.innerHTML = `
+                            <div class="scan-status">${statusIcon}</div>
+                            <div class="scan-details">
+                                <h4>${student.name} (${student.roll})</h4>
+                                <p>${status.toUpperCase()} at ${student.lastCheckin}</p>
+                                <span class="override-badge">Manual Override</span>
+                            </div>
+                            <div class="scan-time">${new Date().toLocaleTimeString()}</div>
+                        `;
+                        
+                        scanFeed.insertBefore(entry, scanFeed.firstChild);
+                        
+                        // Clear input
+                        document.getElementById('overrideRoll').value = '';
+                    } else {
+                        alert('Student not found!');
+                    }
+                } else {
+                    alert('Please enter a roll number!');
+                }
+            });
+            
+            // Save note
+            document.getElementById('saveNote').addEventListener('click', function() {
+                const note = document.getElementById('classNote').value.trim();
+                if (note) {
+                    alert('Class note saved: ' + note);
+                    document.getElementById('classNote').value = '';
+                } else {
+                    alert('Please enter a note!');
+                }
+            });
+            
+            // QR disable toggle
+            document.getElementById('toggleQRBtn').addEventListener('click', function() {
+                const btn = document.getElementById('toggleQRBtn');
+                if (btn.innerHTML.includes('Disable')) {
+                    btn.innerHTML = '<i class="fas fa-check"></i><span>Enable QR</span>';
+                    alert('QR code disabled for 30 seconds!');
+                    
+                    // Re-enable after 30 seconds
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-ban"></i><span>Disable for 30s</span>';
+                    }, 30000);
+                } else {
+                    btn.innerHTML = '<i class="fas fa-ban"></i><span>Disable for 30s</span>';
+                }
+            });
+            }, 500); // 500ms delay to ensure Chart.js is loaded
+        });
+        
+        // Initialize public host from localStorage if available
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedHost = localStorage.getItem('publicHost');
+            if (savedHost) {
+                document.getElementById('publicHost').value = savedHost;
+            }
+        });
+        
+        // Student status toggle function
+        function toggleStatus(element) {
+            if (element.classList.contains('present')) {
+                element.classList.remove('present');
+                element.classList.add('absent');
+                element.innerHTML = '<i class="fas fa-times"></i><span>Absent</span>';
+            } else {
+                element.classList.remove('absent');
+                element.classList.add('present');
+                element.innerHTML = '<i class="fas fa-check"></i><span>Present</span>';
+            }
+            updateStats();
+            saveAttendance(); // Auto-save when status changes
+        }
+        
+        function updateStats() {
+            const present = document.querySelectorAll('.status-toggle.present').length;
+            const total = document.querySelectorAll('.student-item').length;
+            const absent = total - present;
+            const rate = Math.round((present / total) * 100);
+            
+            // Update header stats
+            document.querySelector('.header-stats .stat-bubble:nth-child(1) .stat-number').textContent = total;
+            document.querySelector('.header-stats .stat-bubble:nth-child(3) .stat-number').textContent = rate + '%';
+            
+            // Update attendance stats
+            document.querySelector('.attendance-stats .stat-card:nth-child(2) .stat-number').textContent = present;
+            document.querySelector('.attendance-stats .stat-card:nth-child(3) .stat-number').textContent = absent;
+            document.querySelector('.attendance-stats .stat-card:nth-child(4) .stat-number').textContent = rate + '%';
+            
+            // Update progress bars
+            document.querySelector('.attendance-stats .stat-card:nth-child(2) .progress-bar').style.width = (present/total*100) + '%';
+            document.querySelector('.attendance-stats .stat-card:nth-child(3) .progress-bar').style.width = (absent/total*100) + '%';
+            document.querySelector('.attendance-stats .stat-card:nth-child(4) .progress-bar').style.width = rate + '%';
+        }
+        
+        // Search Box Filter Functionality
+        document.querySelector('.search-box input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const studentItems = document.querySelectorAll('.student-item');
+            let visibleCount = 0;
+            
+            studentItems.forEach(item => {
+                const name = item.querySelector('.name').textContent.toLowerCase();
+                const roll = item.querySelector('.roll').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || roll.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update search results count
+            updateSearchResults(visibleCount, searchTerm);
+        });
+        
+        function updateSearchResults(count, searchTerm) {
+            const studentCard = document.querySelector('.student-card');
+            const existingCount = studentCard.querySelector('.search-count');
+            
+            if (existingCount) {
+                existingCount.remove();
+            }
+            
+            if (searchTerm) {
+                const countElement = document.createElement('div');
+                countElement.className = 'search-count';
+                countElement.innerHTML = `<span>${count} of 20 students found</span>`;
+                countElement.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(59, 130, 246, 0.2);
+                    color: var(--primary-color);
+                    padding: 8px 15px;
+                    border-radius: 20px;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                `;
+                studentCard.style.position = 'relative';
+                studentCard.appendChild(countElement);
+            }
+        }
+        
+        // ===== Dynamic Roster: load/save/render/import =====
+        function getRosterKey(){
+            return `roster_${document.getElementById('classSelect')?.value || 'default'}`;
+        }
+
+        function loadRoster(){
+            const stored = localStorage.getItem(getRosterKey());
+            let roster = [];
+            if (stored){ roster = JSON.parse(stored); }
+            if (!roster.length){
+                // empty initial
+                roster = [];
+            }
+            renderRoster(roster);
+        }
+
+        function renderRoster(roster){
+            const list = document.getElementById('studentList');
+            list.innerHTML = '';
+            roster.forEach(s=>{
+                const item = document.createElement('div');
+                item.className = 'student-item glass-item';
+                item.dataset.roll = s.roll;
+                item.innerHTML = `
+                    <div class="student-avatar"><i class="fas fa-user"></i></div>
+                    <div class="student-info">
+                        <span class="roll">${s.roll}</span>
+                        <span class="name">${s.name}</span>
+                    </div>
+                    <div class="status-toggle ${s.status==='Present'?'present':'absent'}" onclick="toggleStatus(this)">
+                        <i class="fas ${s.status==='Present'?'fa-check':'fa-times'}"></i>
+                        <span>${s.status==='Present'?'Present':'Absent'}</span>
+                    </div>`;
+                list.appendChild(item);
+            });
+            updateStats();
+        }
+
+        function readCurrentRoster(){
+            return Array.from(document.querySelectorAll('#studentList .student-item')).map(el=>({
+                roll: el.dataset.roll,
+                name: el.querySelector('.name').textContent,
+                status: el.querySelector('.status-toggle').classList.contains('present') ? 'Present' : 'Absent'
+            }));
+        }
+
+        function saveRoster(){
+            const roster = readCurrentRoster();
+            localStorage.setItem(getRosterKey(), JSON.stringify(roster));
+            showSaveIndicator();
+        }
+
+        document.getElementById('saveRosterBtn').addEventListener('click', saveRoster);
+        document.getElementById('addStudentBtn').addEventListener('click', ()=>{
+            const roll = (document.getElementById('addRoll').value||'').trim();
+            const name = (document.getElementById('addName').value||'').trim();
+            if (!roll || !name) return alert('Enter roll and name');
+            const roster = readCurrentRoster();
+            if (roster.some(s=>s.roll===roll)) return alert('Roll already exists');
+            roster.push({roll, name, status:'Present'});
+            renderRoster(roster); saveRoster();
+            document.getElementById('addRoll').value=''; document.getElementById('addName').value='';
+        });
+
+        document.getElementById('importCSVBtn').addEventListener('click', ()=> document.getElementById('importCSVInput').click());
+        document.getElementById('importCSVInput').addEventListener('change', async (e)=>{
+            const file = e.target.files[0]; if(!file) return;
+            const text = await file.text();
+            // expect headers: roll,name
+            const rows = text.split(/\r?\n/).map(r=>r.trim()).filter(Boolean);
+            const roster = [];
+            rows.slice(1).forEach(line=>{
+                const [roll,name] = line.split(',');
+                if (roll && name) roster.push({roll: roll.trim(), name: name.trim(), status: 'Present'});
+            });
+            if (roster.length){ renderRoster(roster); saveRoster(); }
+            e.target.value = '';
+        });
+
+        // Local Storage Save Attendance (based on current roster render)
+        function saveAttendance() {
+            const data = readCurrentRoster().map(({roll,status})=>({roll,status}));
+            localStorage.setItem('attendanceData', JSON.stringify(data));
+            showSaveIndicator(); // Show save indicator
+        }
+        
+        // Load Attendance from Local Storage
+        function loadAttendance() {
+            const savedData = localStorage.getItem('attendanceData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                const roster = readCurrentRoster().map(s=>({
+                    ...s,
+                    status: data.find(d=>d.roll===s.roll)?.status || s.status
+                }));
+                renderRoster(roster);
+                
+                updateStats();
+            }
+        }
+        
+        // Auto-save attendance every 5 seconds
+        setInterval(saveAttendance, 5000);
+        
+        function showSaveIndicator() {
+            const searchBox = document.querySelector('.search-box');
+            const saveIndicator = document.createElement('div');
+            saveIndicator.className = 'save-indicator';
+            saveIndicator.innerHTML = '<i class="fas fa-save"></i> Saved';
+            saveIndicator.style.cssText = `
+                position: absolute;
+                top: -30px;
+                right: 0;
+                background: rgba(34, 197, 94, 0.9);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            searchBox.style.position = 'relative';
+            searchBox.appendChild(saveIndicator);
+            
+            setTimeout(() => {
+                saveIndicator.remove();
+            }, 2000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', ()=>{ loadRoster(); loadAttendance(); });
+
+        const scanFeedEl = document.getElementById('scanFeed');
+        const alertBar = document.getElementById('alertBar');
+        const scansWindow = [];
+        const scanLog = [];
+
+        document.getElementById('simulateScan').addEventListener('click', async () => {
+            if (students.length === 0) {
+                alert('No students in the roster. Please add students first.');
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * students.length);
+            const student = students[randomIndex];
+            const roll = student.roll;
+            
+            let lat = (lastGeneratedPayload?.lat || 0) + (Math.random()-0.5)/1000;
+            let lon = (lastGeneratedPayload?.lon || 0) + (Math.random()-0.5)/1000;
+            const faceOk = Math.random()>0.1;
+            const deviceId = 'DEV-' + Math.random().toString(36).slice(2,7).toUpperCase();
+            handleScan({roll, lat, lon, faceOk, deviceId});
+        });
+
+        function handleScan({roll, lat, lon, faceOk, deviceId}){
+            const within = isWithinRadius(lat, lon, lastGeneratedPayload?.lat, lastGeneratedPayload?.lon, 50);
+            const status = (within && faceOk) ? 'Verified' : (within? 'Face Failed' : 'Geo Fail');
+            const ts = Date.now();
+            scansWindow.push(ts);
+            while (scansWindow.length && ts - scansWindow[0] > 1000) scansWindow.shift();
+            if (scansWindow.length >= 10) showAlert('Suspicious burst detected: 10+ scans in 1s');
+
+            const recentSameDevice = scanLog.slice(-20).filter(s=>s.deviceId===deviceId).length;
+            const flagged = recentSameDevice>2 || status!=='Verified';
+            let studentName = 'Unknown Student';
+            const student = students.find(s => s.roll === roll);
+            if (student) {
+                studentName = student.name;
+            }
+
+            const item = document.createElement('div');
+            item.className = `feed-item ${flagged? 'flag':''}`;
+            item.innerHTML = `<div><strong>${studentName}</strong> (${roll}) • ${new Date(ts).toLocaleTimeString()} • ${status}</div>
+                              <div class="feed-meta">Device ${deviceId} • ${lat?.toFixed(5)}, ${lon?.toFixed(5)}</div>`;
+            scanFeedEl.prepend(item);
+
+            scanLog.push({ts, roll, deviceId, lat, lon, status});
+            if (flagged) showAlert('Suspicious activity flagged');
+        }
+
+        function isWithinRadius(lat1, lon1, lat2, lon2, meters){
+            if (lat1==null || lat2==null) return false;
+            const R=6371000; // m
+            const toRad = d=>d*Math.PI/180;
+            const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+            const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+            const c=2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R*c <= meters;
+        }
+
+        function showAlert(msg){
+            alertBar.textContent = msg;
+            alertBar.style.display = 'block';
+            setTimeout(()=> alertBar.style.display='none', 3000);
+        }
+
+        // Receive live check-ins from student page
+        const bc = new BroadcastChannel('attendiq');
+        bc.onmessage = (ev)=>{
+            if (ev.data?.type === 'scan') {
+                handleScan(ev.data.payload);
+                
+                // Check if we have uploaded students from Excel
+                if (uploadedStudents && uploadedStudents.length > 0) {
+                    // Try to find student by email in the uploaded list
+                    const studentEmail = ev.data.payload.email;
+                    if (studentEmail) {
+                        markStudentPresent(studentEmail, new Date().toLocaleTimeString());
+                    }
+                } else {
+                    // Fall back to original behavior for regular roster
+                    const statusEl = document.querySelector(`.student-item[data-roll="${ev.data.payload.roll}"] .status-toggle`);
+                    if (statusEl && !statusEl.classList.contains('present')) {
+                        statusEl.classList.remove('absent');
+                        statusEl.classList.add('present');
+                        statusEl.innerHTML = '<i class="fas fa-check"></i><span>Present</span>';
+                        updateStats(); saveAttendance();
+                    }
+                }
+            }
+        };
+
+        // Export CSV
+        document.getElementById('exportCSV').addEventListener('click', () => {
+            const rows = [['Timestamp','Roll','Device','Lat','Lon','Status']]
+                .concat(scanLog.map(s=>[new Date(s.ts).toISOString(), s.roll, s.deviceId, s.lat, s.lon, s.status]));
+            const csv = rows.map(r=>r.join(',')).join('\n');
+            const blob = new Blob([csv], {type:'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `${currentSessionId||'session'}-attendance.csv`; a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Class notes
+        document.getElementById('saveNote').addEventListener('click', ()=>{
+            const note = (document.getElementById('classNote').value||'').trim();
+            if (!note) { alert('Note is empty'); return; }
+            localStorage.setItem(`note_${currentSessionId}`, note);
+            showSaveIndicator();
+        });
+
+        // Manual override
+        document.getElementById('applyOverride').addEventListener('click', ()=>{
+            const roll = (document.getElementById('overrideRoll').value||'').trim();
+            const status = document.getElementById('overrideStatus').value;
+            if (!roll) return alert('Enter roll');
+            const item = document.querySelector(`.student-item[data-roll="${roll}"] .status-toggle`);
+            if (!item) return alert('Roll not found');
+            if (status==='Present') {
+                item.classList.remove('absent'); item.classList.add('present'); item.innerHTML = '<i class="fas fa-check"></i><span>Present</span>';
+            } else {
+                item.classList.remove('present'); item.classList.add('absent'); item.innerHTML = '<i class="fas fa-times"></i><span>Absent</span>';
+            }
+            updateStats(); saveAttendance(); showSaveIndicator();
+        });
+
+        // Temporary disable QR for 30s
+        document.getElementById('toggleQRBtn').addEventListener('click', ()=>{
+            stopAutoRefresh();
+            const btn = document.getElementById('toggleQRBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-ban"></i><span>Disabled 30s</span>';
+            setTimeout(()=>{ btn.disabled=false; btn.innerHTML='<i class="fas fa-shield-check"></i><span>Re-enable</span>'; startAutoRefresh(); }, 30000);
+        });
+
+        // Analytics mock (compute from current session log + current toggles)
+        function recomputeAnalytics(){
+            const total = document.querySelectorAll('.student-item').length;
+            const present = document.querySelectorAll('.status-toggle.present').length;
+            const avg = Math.round((present/total)*100);
+            document.getElementById('avgAttendance').textContent = avg + '%';
+            // Mock lists from toggles (under 75 -> absent today proxy)
+            const under = [];
+            document.querySelectorAll('.student-item .status-toggle.absent').forEach(el=>{
+                const item = el.closest('.student-item');
+                under.push(item.querySelector('.name').textContent + ' ('+ item.dataset.roll +')');
+            });
+            document.getElementById('under75').textContent = under.length;
+            const underList = document.getElementById('under75List'); underList.innerHTML = under.map(n=>`<li>${n}</li>`).join('');
+            // Leaderboard mock: first 3 present as top
+            const top = Array.from(document.querySelectorAll('.student-item .status-toggle.present')).slice(0,3)
+                .map(el=>el.closest('.student-item').querySelector('.name').textContent);
+            document.getElementById('leaderboardTop').textContent = top[0]||'-';
+            document.getElementById('leaderboardList').innerHTML = top.map((n,i)=>`<li>#${i+1} ${n}</li>`).join('');
+            // Late joiners (from scanLog where Verified after first minute)
+            const firstTs = scanLog[0]?.ts || Date.now();
+            const late = scanLog.filter(s=>s.status==='Verified' && s.ts-firstTs>60000).map(s=>s.roll);
+            document.getElementById('lateJoiners').textContent = new Set(late).size;
+            document.getElementById('lateList').innerHTML = Array.from(new Set(late)).map(r=>`<li>${r}</li>`).join('');
+        }
+        setInterval(recomputeAnalytics, 5000);
+        
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored data
+                localStorage.removeItem('facultyData');
+                localStorage.removeItem('attendanceData');
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Quick Actions Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Quick Generate QR Button
+            document.getElementById('quickGenerateQR').addEventListener('click', function() {
+                // Scroll to QR section
+                document.querySelector('.qr-section').scrollIntoView({ behavior: 'smooth' });
+                // Focus on class select
+                document.getElementById('classSelect').focus();
+            });
+            
+            // Quick Take Attendance Button
+            document.getElementById('quickTakeAttendance').addEventListener('click', function() {
+                // If QR is already generated, show classroom box
+                if (currentSessionId) {
+                    showClassroomBox();
+                } else {
+                    // Otherwise, prompt to generate QR first
+                    alert('Please generate a QR code first to take attendance');
+                    document.getElementById('quickGenerateQR').click();
+                }
+            });
+            
+            // Quick View Reports Button
+            document.getElementById('quickViewReports').addEventListener('click', function() {
+                // Scroll to reports section
+                document.querySelector('.analytics-section').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Initialize classroom box if we have uploaded students
+            if (sessionStorage.getItem('currentSessionStudents')) {
+                initializeClassroomBox();
+            }
+        });
+        
+        // Function to initialize classroom box with student bubbles
+        function initializeClassroomBox() {
+            const classroomBox = document.getElementById('classroomBox');
+            classroomBox.innerHTML = '<div class="classroom-title">Classroom Attendance</div>';
+            
+            // Get uploaded students
+            const sessionStudents = sessionStorage.getItem('currentSessionStudents');
+            if (sessionStudents) {
+                const students = JSON.parse(sessionStudents);
+                
+                // Limit to 10 students as requested
+                const limitedStudents = students.slice(0, 10);
+                
+                // Create a bubble for each student
+                limitedStudents.forEach(student => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'student-bubble';
+                    bubble.id = `bubble-${student.email.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                    
+                    const info = document.createElement('div');
+                    info.className = 'student-info';
+                    info.textContent = student.name;
+                    
+                    bubble.appendChild(info);
+                    classroomBox.appendChild(bubble);
+                });
+                
+                // Update student count to show 10 instead of 20
+                document.querySelector('.stat-number').textContent = limitedStudents.length;
+            }
+        }
+        
+        // Function to show classroom box
+        function showClassroomBox() {
+            const classroomBox = document.getElementById('classroomBox');
+            if (!classroomBox.hasChildNodes() || classroomBox.childNodes.length <= 1) {
+                initializeClassroomBox();
+            }
+            classroomBox.style.display = 'flex';
+        }
+        
+        // Modified markStudentPresent function to also update classroom visualization
+        const originalMarkStudentPresent = markStudentPresent;
+        markStudentPresent = function(email, timestamp) {
+            // Call the original function and store its return value
+            const result = originalMarkStudentPresent(email, timestamp);
+            
+            // Update the classroom visualization
+            const bubbleId = `bubble-${email.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            const bubble = document.getElementById(bubbleId);
+            if (bubble && !bubble.classList.contains('present')) {
+                bubble.classList.add('present');
+                // After animation completes, hide the bubble
+                setTimeout(() => {
+                    bubble.style.display = 'none';
+                }, 500);
+            }
+            
+            // Return the original function's result
+            return result;
+        }
+    </script>
+</body>
+</html>

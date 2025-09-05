@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - AttendIQ</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <i class="fas fa-graduation-cap"></i>
+        <span>AttendIQ Student</span>
+      </div>
+      <div class="nav-menu">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="#dashboard" class="nav-link">Dashboard</a>
+        <a href="#history" class="nav-link">My Attendance</a>
+        <a href="login.html" class="nav-link btn-login">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="faculty-main">
+    <div class="container">
+      <div class="faculty-header">
+        <div class="header-content">
+          <h1 class="gradient-title">Welcome, Student</h1>
+          <p class="header-subtitle">Scan QR to mark attendance and view your history</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-bubble">
+            <span id="totalClasses" class="stat-number">0</span>
+            <span class="stat-label">Total Classes</span>
+          </div>
+          <div class="stat-bubble">
+            <span id="presentCount" class="stat-number">0</span>
+            <span class="stat-label">Present</span>
+          </div>
+          <div class="stat-bubble">
+            <span id="myRate" class="stat-number">0%</span>
+            <span class="stat-label">Attendance</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card glass-card">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-camera"></i></div>
+            <h3>Scan QR</h3>
+          </div>
+          <div class="action-buttons">
+            <button id="startScan" class="btn btn-primary btn-3d">
+              <i class="fas fa-play"></i><span>Start Camera</span>
+            </button>
+            <button id="stopScan" class="btn btn-secondary btn-3d">
+              <i class="fas fa-stop"></i><span>Stop Camera</span>
+            </button>
+            <button id="manualEntry" class="btn btn-accent btn-3d">
+              <i class="fas fa-keyboard"></i><span>Manual Entry</span>
+            </button>
+          </div>
+          <div id="reader" class="glass-display" style="margin-top:15px; width:100%; min-height:300px"></div>
+          <div id="manualEntryForm" class="glass-display" style="margin-top:15px; padding:20px; display:none;">
+            <h4>Manual QR Code Entry</h4>
+            <p>If your camera is not working, enter the session code provided by your instructor:</p>
+            <div style="margin:15px 0;">
+              <input type="text" id="sessionCodeInput" placeholder="Enter session code" class="form-input" style="width:100%; margin-bottom:10px;">
+              <button id="submitCode" class="btn btn-primary" style="width:100%;">Submit</button>
+            </div>
+          </div>
+          <p id="scanStatus" style="text-align:center;color:var(--gray-text);margin-top:10px"></p>
+        </div>
+
+        <div id="history" class="dashboard-card glass-card">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-list-check"></i></div>
+            <h3>My Attendance</h3>
+          </div>
+          <div id="myAttendanceList" class="feed-list"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let html5QrcodeScanner = null;
+    const readerEl = document.getElementById('reader');
+    const statusEl = document.getElementById('scanStatus');
+    
+    function checkBrowserCompatibility() {
+      const isCompatible = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+      
+      if (!isCompatible) {
+        statusEl.innerHTML = '<span style="color:#ef4444;">⚠️ Your browser may not support camera access. Please use Chrome, Safari, or another modern browser, or use the Manual Entry option.</span>';
+        document.getElementById('manualEntry').style.backgroundColor = 'var(--primary-color)';
+      } else {
+        statusEl.textContent = 'Ready to scan. Click "Start Camera" to begin.';
+      }
+      
+      return isCompatible;
+    }
+
+    function startCam() {
+      if (html5QrcodeScanner) return;
+
+      if (!checkBrowserCompatibility()) {
+        document.getElementById('manualEntry').click();
+        return;
+      }
+
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          statusEl.textContent = 'Camera access not supported by your browser. Please try using a modern browser like Chrome or Safari.';
+          return;
+        }
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+          .then(stream => {
+            stream.getTracks().forEach(track => track.stop());
+            
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start(
+              { facingMode: "environment" },
+              {
+                fps: 10,
+                qrbox: { width: 250, height: 250 } // fixed size for all devices (no mismatch)
+              },
+              onScanSuccess,
+              onScanError
+            ).then(() => {
+          statusEl.textContent = 'Scanner running...';
+        }).catch(err => {
+          console.error("Camera start error:", err);
+          
+          if (err.toString().includes('Permission denied') || err.toString().includes('NotAllowedError')) {
+            statusEl.textContent = 'Camera permission denied. Please allow camera access and try again.';
+          } else if (err.toString().includes('NotFoundError') || err.toString().includes('DevicesNotFoundError')) {
+            statusEl.textContent = 'No camera found. Please ensure your device has a working camera.';
+          } else if (err.toString().includes('NotReadableError') || err.toString().includes('TrackStartError')) {
+            statusEl.textContent = 'Camera is in use by another application. Please close other apps using the camera.';
+          } else if (err.toString().includes('OverconstrainedError')) {
+            statusEl.textContent = 'Camera constraints not satisfied. Try using a different browser.';
+          } else {
+            statusEl.textContent = 'Camera error: ' + err;
+          }
+          
+          html5QrcodeScanner = null;
+        });
+      }).catch(err => {
+        console.error("Camera permission error:", err);
+        
+        if (err.toString().includes('Permission denied') || err.toString().includes('NotAllowedError')) {
+          statusEl.textContent = 'Camera permission denied. Please allow camera access in your browser settings and try again.';
+        } else {
+          statusEl.textContent = 'Camera access error: ' + err;
+        }
+      });
+      } catch (e) {
+        console.error("Init error:", e);
+        statusEl.textContent = 'Scanner initialization failed. Please try using a different browser or device.';
+      }
+    }
+
+    function stopCam() {
+      if (!html5QrcodeScanner) return;
+      html5QrcodeScanner.stop().then(() => {
+        html5QrcodeScanner.clear();
+        html5QrcodeScanner = null;
+        statusEl.textContent = 'Scanner stopped';
+      }).catch(err => console.error("Stop error:", err));
+    }
+
+    function onScanSuccess(decodedText) {
+      stopCam();
+      statusEl.textContent = 'QR detected, processing...';
+
+      if (decodedText.includes('/checkin.html') || decodedText.includes('session=')) {
+        try {
+          window.location.href = decodedText;
+        } catch (error) {
+          statusEl.textContent = 'Invalid QR content';
+        }
+      } else {
+        statusEl.textContent = 'Invalid QR code. Please scan AttendIQ QR code.';
+        setTimeout(() => {
+          statusEl.textContent = 'Ready to scan';
+        }, 3000);
+      }
+    }
+
+    function onScanError(errorMessage) {
+      console.warn("Scan error:", errorMessage);
+    }
+
+    document.getElementById('startScan').addEventListener('click', startCam);
+    document.getElementById('stopScan').addEventListener('click', stopCam);
+    
+    document.getElementById('manualEntry').addEventListener('click', function() {
+      const readerEl = document.getElementById('reader');
+      const manualEntryForm = document.getElementById('manualEntryForm');
+      
+      if (manualEntryForm.style.display === 'none') {
+        // Stop camera if running
+        stopCam();
+        
+        // Hide reader and show manual entry
+        readerEl.style.display = 'none';
+        manualEntryForm.style.display = 'block';
+        statusEl.textContent = 'Manual entry mode';
+        this.innerHTML = '<i class="fas fa-camera"></i><span>Use Camera</span>';
+      } else {
+        // Show reader and hide manual entry
+        readerEl.style.display = 'block';
+        manualEntryForm.style.display = 'none';
+        statusEl.textContent = 'Ready to scan';
+        this.innerHTML = '<i class="fas fa-keyboard"></i><span>Manual Entry</span>';
+      }
+    });
+    
+    document.getElementById('submitCode').addEventListener('click', function() {
+      const sessionCode = document.getElementById('sessionCodeInput').value.trim();
+      
+      if (!sessionCode) {
+        statusEl.textContent = 'Please enter a session code';
+        return;
+      }
+      
+      statusEl.textContent = 'Processing session code...';
+      
+      const checkInUrl = `student-checkin.html?session=${sessionCode}`;
+      
+      window.location.href = checkInUrl;
+    });
+
+    function loadMyAttendance() {
+      const data = JSON.parse(localStorage.getItem('myAttendance') || '[]');
+      const list = document.getElementById('myAttendanceList');
+      list.innerHTML = '';
+      data.slice().reverse().forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'feed-item';
+        item.innerHTML = `
+          <div><strong>${r.classId || '-'}</strong> • ${new Date(r.ts).toLocaleString()} • ${r.status || '-'}</div>
+          <div class="feed-meta">Session ${r.sessionId || '-'}</div>`;
+        list.appendChild(item);
+      });
+
+      const total = data.length;
+      const present = data.filter(r => r.status === 'Verified').length;
+      document.getElementById('totalClasses').textContent = total;
+      document.getElementById('presentCount').textContent = present;
+      document.getElementById('myRate').textContent = total ? Math.round(present * 100 / total) + '%' : '0%';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadMyAttendance();
+      checkBrowserCompatibility();
+    });
+  </script>
+</body>
+</html>

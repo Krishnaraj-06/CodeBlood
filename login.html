@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AttendIQ</title>
+    <meta name="description" content="Login to AttendIQ - Smart Attendance Management System">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 50%, var(--dark-bg) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 50%, var(--dark-bg) 100%);
+        }
+
+        .login-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .login-particles::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            box-shadow: 
+                20vw 20vh 0 rgba(255, 255, 255, 0.1),
+                40vw 40vh 0 rgba(255, 255, 255, 0.1),
+                60vw 60vh 0 rgba(255, 255, 255, 0.1),
+                80vw 80vh 0 rgba(255, 255, 255, 0.1),
+                10vw 10vh 0 rgba(255, 255, 255, 0.1),
+                30vw 30vh 0 rgba(255, 255, 255, 0.1),
+                50vw 50vh 0 rgba(255, 255, 255, 0.1),
+                70vw 70vh 0 rgba(255, 255, 255, 0.1),
+                90vw 90vh 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-heavy);
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .login-logo i {
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        .login-logo span {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--light-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-text);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-text);
+        }
+
+        .input-with-icon {
+            padding-left: 45px;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .form-checkbox label {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .login-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .login-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .login-divider span {
+            background: var(--dark-bg);
+            padding: 0 15px;
+            color: var(--gray-text);
+            font-size: 0.9rem;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .social-btn:hover {
+            background: var(--glass-bg);
+            border-color: var(--primary-color);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--light-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .back-home:hover {
+            color: var(--primary-color);
+        }
+
+        /* User Type Selection Styles */
+        .user-type-selection {
+            margin-bottom: 30px;
+        }
+
+        .user-type-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .user-type-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-type-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .user-type-card:hover {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .user-type-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .user-type-card.selected {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            transform: scale(1.02);
+        }
+
+        .user-type-card.selected::before {
+            transform: scaleX(1);
+        }
+
+        .user-type-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .user-type-card:hover .user-type-icon {
+            transform: scale(1.1);
+        }
+
+        .user-type-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--light-text);
+        }
+
+        .user-type-card p {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Selected User Type Display */
+        .selected-user-type {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .back-to-selection {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-selection:hover {
+            color: var(--secondary-color);
+        }
+
+        .current-user-type {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-type-label {
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        .user-type-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: capitalize;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+
+            .user-type-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .user-type-card {
+                padding: 15px;
+            }
+
+            .selected-user-type {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .current-user-type {
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-home">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+    </a>
+
+    <div class="login-container">
+        <div class="login-background">
+            <div class="login-particles"></div>
+        </div>
+        
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>AttendIQ</span>
+                </div>
+                <h1 class="login-title">Welcome to AttendIQ</h1>
+                <p class="login-subtitle">Choose your login type to continue</p>
+            </div>
+
+            <div class="user-type-selection">
+                <div class="user-type-grid">
+                    <div class="user-type-card" data-type="student">
+                        <div class="user-type-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3>Student</h3>
+                        <p>Mark attendance and view records</p>
+                    </div>
+                    <div class="user-type-card" data-type="faculty">
+                        <div class="user-type-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h3>Faculty</h3>
+                        <p>Generate QR codes and manage classes</p>
+                    </div>
+                    <div class="user-type-card" data-type="admin">
+                        <div class="user-type-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3>Admin</h3>
+                        <p>Complete system management</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="loginForm" class="login-form" style="display: none;">
+                <div class="selected-user-type">
+                    <div class="back-to-selection">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to user selection</span>
+                    </div>
+                    <div class="current-user-type">
+                        <span class="user-type-label">Logging in as:</span>
+                        <span class="user-type-name"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" class="form-input input-with-icon" placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" class="form-input input-with-icon" placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <div class="form-checkbox">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span>Sign In</span>
+                </button>
+            </form>
+
+            <div class="login-divider">
+                <span>or continue with</span>
+            </div>
+
+            <div class="social-login">
+                <button class="social-btn">
+                    <i class="fab fa-google"></i>
+                    Google
+                </button>
+                <button class="social-btn">
+                    <i class="fab fa-microsoft"></i>
+                    Microsoft
+                </button>
+            </div>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="register.html">Sign up</a></p>
+                <p><a href="forgot-password.html">Forgot your password?</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let selectedUserType = null;
+
+        // User type selection handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const userTypeCards = document.querySelectorAll('.user-type-card');
+            const userTypeSelection = document.querySelector('.user-type-selection');
+            const loginForm = document.getElementById('loginForm');
+            const backToSelection = document.querySelector('.back-to-selection');
+            const userTypeName = document.querySelector('.user-type-name');
+            const loginTitle = document.querySelector('.login-title');
+            const loginSubtitle = document.querySelector('.login-subtitle');
+
+            // Handle user type card clicks
+            userTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    selectedUserType = this.dataset.type;
+                    const typeName = this.querySelector('h3').textContent;
+                    
+                    // Update UI
+                    userTypeSelection.style.display = 'none';
+                    loginForm.style.display = 'block';
+                    userTypeName.textContent = typeName;
+                    
+                    // Update header text
+                    loginTitle.textContent = `Welcome Back, ${typeName}`;
+                    loginSubtitle.textContent = 'Sign in to your account to continue';
+                });
+            });
+
+            // Handle back to selection
+            backToSelection.addEventListener('click', function() {
+                selectedUserType = null;
+                userTypeSelection.style.display = 'block';
+                loginForm.style.display = 'none';
+                
+                // Reset header text
+                loginTitle.textContent = 'Welcome to AttendIQ';
+                loginSubtitle.textContent = 'Choose your login type to continue';
+                
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            });
+        });
+
+        // Login form handling
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple validation
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (!selectedUserType) {
+                alert('Please select user type');
+                return;
+            }
+            
+            // Check if email already exists in another user type
+            const storedEmails = JSON.parse(localStorage.getItem('userEmails') || '{}');
+            
+            // If this email exists for a different user type, prevent login
+            for (const userType in storedEmails) {
+                if (userType !== selectedUserType && storedEmails[userType].includes(email)) {
+                    alert(`This email is already registered as a ${userType}. Student and faculty emails cannot be the same.`);
+                    return;
+                }
+            }
+            
+            // Store this email for the selected user type
+            if (!storedEmails[selectedUserType]) {
+                storedEmails[selectedUserType] = [];
+            }
+            
+            if (!storedEmails[selectedUserType].includes(email)) {
+                storedEmails[selectedUserType].push(email);
+                localStorage.setItem('userEmails', JSON.stringify(storedEmails));
+            }
+            
+            // Simulate login process
+            const loginBtn = document.querySelector('.login-btn');
+            const originalText = loginBtn.innerHTML;
+            
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+            loginBtn.disabled = true;
+            
+            // Store email in sessionStorage for attendance tracking
+            sessionStorage.setItem('userEmail', email);
+            
+            // Simulate API call with user type routing
+            setTimeout(() => {
+                // Check if there's a redirect URL stored in session
+                const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                
+                if (redirectUrl) {
+                    // Clear the stored URL
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    // Redirect to the stored URL
+                    window.location.href = redirectUrl;
+                } else {
+                    // Route to different dashboards based on user type
+                    switch(selectedUserType) {
+                        case 'student':
+                            window.location.href = 'student-dashboard.html';
+                            break;
+                        case 'faculty':
+                            window.location.href = 'faculty-dashboard.html';
+                            break;
+                        case 'admin':
+                            window.location.href = 'admin-dashboard.html';
+                            break;
+                        default:
+                            window.location.href = 'dashboard.html';
+                    }
+                }
+            }, 2000);
+        });
+
+        // Add particle animation
+        function createParticles() {
+            const particlesContainer = document.querySelector('.login-particles');
+            if (!particlesContainer) return;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 50%;
+                    left: ${Math.random() * 100}vw;
+                    top: ${Math.random() * 100}vh;
+                    animation: float ${Math.random() * 3 + 2}s ease-in-out infinite;
+                    animation-delay: ${Math.random() * 2}s;
+                `;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+    </script>
+</body>
+</html>
+

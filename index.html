@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendIQ - Smart Attendance Management System</title>
+    <meta name="description" content="Revolutionizing attendance management with AI-powered QR codes, facial recognition, and real-time geolocation tracking.">
+    <meta name="keywords" content="attendance, QR code, face recognition, geolocation, student management, college attendance">
+    <meta name="author" content="AttendIQ Team">
+    
+    <meta property="og:title" content="AttendIQ - Smart Attendance Management System">
+    <meta property="og:description" content="Revolutionizing attendance management with AI-powered QR codes, facial recognition, and real-time geolocation tracking.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://attendiq.com">
+    
+
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>AttendIQ</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="login.html" class="nav-link btn-login">Login</a>
+                <a href="faculty-dashboard.html" class="nav-link">Faculty</a>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="particles"></div>
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <div class="container">
+                <div class="hero-text">
+                    <div class="hero-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Trusted by 500+ Institutions Worldwide</span>
+                    </div>
+                    <h1 class="hero-title">
+                        The Future of <span class="gradient-text">Attendance Management</span> is Here
+                    </h1>
+                    <p class="hero-description">
+                        Join the revolution with AI-powered attendance that's <span class="highlight">10x faster</span>, 
+                        <span class="highlight">99.9% accurate</span>, and <span class="highlight">100% secure</span>. 
+                        Transform your campus in minutes, not months.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Institutions</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50K+</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                    </div>
+                    <div class="hero-buttons">
+                        <a href="login.html" class="btn btn-primary btn-hero">
+                            <span>Start Free Trial</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <a href="#demo" class="btn btn-secondary btn-hero">
+                            <i class="fas fa-play"></i>
+                            <span>Watch Demo</span>
+                        </a>
+                    </div>
+                    <div class="hero-trust">
+                        <span class="trust-label">Trusted by leading institutions:</span>
+                        <div class="trust-logos">
+                            <div class="trust-logo">IIT Delhi</div>
+                            <div class="trust-logo">BITS Pilani</div>
+                            <div class="trust-logo">Manipal University</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-showcase">
+                    <div class="showcase-main">
+                        <div class="main-card">
+                            <div class="card-header">
+                                <div class="card-avatar">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div class="card-status">
+                                    <span class="status-dot"></span>
+                                    Live Demo
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3>Smart Attendance in Action</h3>
+                                <p>See how students check-in with just a scan</p>
+                                <div class="demo-stats">
+                                    <div class="demo-stat">
+                                        <span class="stat-value">2.3s</span>
+                                        <span class="stat-desc">Average Check-in</span>
+                                    </div>
+                                    <div class="demo-stat">
+                                        <span class="stat-value">100%</span>
+                                        <span class="stat-desc">Success Rate</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-demo">Try Interactive Demo</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="showcase-features">
+                        <div class="feature-highlight">
+                            <div class="feature-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Setup in 5 Minutes</h4>
+                                <p>No technical expertise required</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-highlight">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-virus"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Enterprise Security</h4>
+                                <p>SOC 2 Type II Compliant</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-highlight">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Real-time Analytics</h4>
+                                <p>Live insights & reports</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="promo-banner">
+                        <div class="promo-content">
+                            <div class="promo-icon">🚀</div>
+                            <div class="promo-text">
+                                <span class="promo-highlight">Launch Special: 3 Months FREE</span>
+                                <span class="promo-desc">Limited time offer for early adopters</span>
+                            </div>
+                        </div>
+                        <div class="promo-timer">
+                            <div class="timer-label">Offer Ends In:</div>
+                            <div class="timer-display">
+                                <span class="timer-unit">07</span>:
+                                <span class="timer-unit">23</span>:
+                                <span class="timer-unit">45</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Why Leading Institutions Choose AttendIQ</span>
+                </div>
+                <h2 class="section-title">Everything You Need for <span class="gradient-text">Smart Attendance</span></h2>
+                <p class="section-description">Built with cutting-edge technology to deliver enterprise-grade attendance management that scales with your institution</p>
+            </div>
+            
+            <div class="features-showcase">
+                <div class="feature-main">
+                    <div class="feature-card feature-primary">
+                        <div class="feature-header">
+                            <div class="feature-icon-large">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="feature-badge">Most Popular</div>
+                        </div>
+                        <h3 class="feature-title">AI-Powered QR Attendance</h3>
+                        <p class="feature-description">Dynamic QR codes that expire in real-time, preventing fraud while ensuring lightning-fast check-ins. Students can mark attendance in under 3 seconds.</p>
+                        <div class="feature-metrics">
+                            <div class="metric">
+                                <span class="metric-value">3s</span>
+                                <span class="metric-label">Check-in Time</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">99.9%</span>
+                                <span class="metric-label">Accuracy</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">0</span>
+                                <span class="metric-label">Fraud Cases</span>
+                            </div>
+                        </div>
+                        <div class="feature-actions">
+                            <button class="btn-feature">See Demo</button>
+                            <a href="#learn-more" class="link-feature">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card feature-secondary">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <h3 class="feature-title">Facial Recognition</h3>
+                        <p class="feature-description">Advanced AI that recognizes students instantly with 99.9% accuracy. Works even with masks and different lighting conditions.</p>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Works with masks</span>
+                        </div>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Low-light optimized</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card feature-secondary">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Geolocation Tracking</h3>
+                        <p class="feature-description">Precise location verification using GPS and WiFi triangulation. Set custom attendance zones and get real-time location data.</p>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>GPS + WiFi accuracy</span>
+                        </div>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Custom attendance zones</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card feature-secondary">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="feature-title">Real-time Analytics</h3>
+                        <p class="feature-description">Live attendance dashboards with instant insights. Track trends, generate reports, and make data-driven decisions.</p>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Live dashboards</span>
+                        </div>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Custom reports</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card feature-secondary">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Mobile-First Design</h3>
+                        <p class="feature-description">Optimized for all devices with offline support. Students can mark attendance even without internet connectivity.</p>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Offline support</span>
+                        </div>
+                        <div class="feature-highlight">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Cross-platform</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-cta">
+                <div class="cta-content">
+                    <h3>Ready to See AttendIQ in Action?</h3>
+                    <p>Book a personalized demo and see how AttendIQ can transform your institution</p>
+                    <div class="cta-buttons">
+                        <button class="btn btn-primary">Book Demo</button>
+                        <button class="btn btn-secondary">Download Brochure</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">
+                    <i class="fas fa-heart"></i>
+                    <span>What Our Customers Say</span>
+                </div>
+                <h2 class="section-title">Trusted by <span class="gradient-text">Leading Institutions</span></h2>
+                <p class="section-description">See how AttendIQ is transforming attendance management across the country</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card testimonial-featured">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Dr. Rajesh Kumar">
+                        </div>
+                        <div class="testimonial-info">
+                            <h4 class="testimonial-name">Dr. Rajesh Kumar</h4>
+                            <p class="testimonial-title">Director, IIT Delhi</p>
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="testimonial-logo">
+                            <i class="fas fa-university"></i>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>"AttendIQ has revolutionized how we manage attendance. The AI-powered system reduced our administrative workload by 80% while improving accuracy to 99.9%. Our faculty can now focus on what matters most - teaching."</p>
+                    </div>
+                    <div class="testimonial-metrics">
+                        <div class="metric">
+                            <span class="metric-value">80%</span>
+                            <span class="metric-label">Workload Reduction</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">15,000+</span>
+                            <span class="metric-label">Students</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonials-side">
+                    <div class="testimonial-card testimonial-compact">
+                        <div class="testimonial-header">
+                            <div class="testimonial-avatar">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt="Prof. Priya Sharma">
+                            </div>
+                            <div class="testimonial-info">
+                                <h4 class="testimonial-name">Prof. Priya Sharma</h4>
+                                <p class="testimonial-title">HOD Computer Science, BITS Pilani</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-content">
+                            <p>"The facial recognition feature is incredibly accurate. Even with masks, it works flawlessly. Our students love how fast and convenient it is."</p>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card testimonial-compact">
+                        <div class="testimonial-header">
+                            <div class="testimonial-avatar">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Dr. Amit Patel">
+                            </div>
+                            <div class="testimonial-info">
+                                <h4 class="testimonial-name">Dr. Amit Patel</h4>
+                                <p class="testimonial-title">Dean, Manipal University</p>
+                            </div>
+                        </div>
+                        <div class="testimonial-content">
+                            <p>"Setup was incredibly easy. We were up and running in just 2 hours. The real-time analytics give us insights we never had before."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonials-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Institutions</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">50,000+</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">2.3s</div>
+                        <div class="stat-label">Avg Check-in</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">4.9/5</div>
+                        <div class="stat-label">Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <div class="section-badge">
+                        <i class="fas fa-rocket"></i>
+                        <span>Our Story</span>
+                    </div>
+                    <h2 class="section-title">Built by <span class="gradient-text">Educators, for Educators</span></h2>
+                    <p class="about-description">
+                        AttendIQ was born from a simple observation: traditional attendance systems were holding back our educational institutions. 
+                        We combined cutting-edge AI technology with deep understanding of educational needs to create a solution that's not just 
+                        powerful, but also intuitive and scalable.
+                    </p>
+                    
+                    <div class="about-mission">
+                        <h3>Our Mission</h3>
+                        <p>To eliminate the administrative burden of attendance management so educators can focus on what they do best - inspiring and teaching the next generation.</p>
+                    </div>
+                    
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Enterprise Security</h4>
+                                <p>SOC 2 Type II compliant with end-to-end encryption</p>
+                            </div>
+                        </div>
+                        <div class="about-feature">
+                            <div class="feature-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Lightning Fast</h4>
+                                <p>Setup in minutes, check-ins in seconds</p>
+                            </div>
+                        </div>
+                        <div class="about-feature">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Mobile First</h4>
+                                <p>Optimized for all devices and screen sizes</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="about-cta">
+                        <a href="#contact" class="btn btn-primary">Get in Touch</a>
+                        <a href="#pricing" class="btn btn-secondary">View Pricing</a>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="visual-container">
+                        <div class="visual-main">
+                            <div class="visual-card">
+                                <div class="card-header">
+                                    <div class="card-avatar">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="card-title">Live Dashboard</div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="chart-placeholder">
+                                        <div class="chart-bar" style="height: 60%"></div>
+                                        <div class="chart-bar" style="height: 80%"></div>
+                                        <div class="chart-bar" style="height: 95%"></div>
+                                        <div class="chart-bar" style="height: 70%"></div>
+                                    </div>
+                                    <div class="chart-stats">
+                                        <span>Today: 95% Attendance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="visual-elements">
+                            <div class="floating-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="floating-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="floating-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-badge">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Ready to Transform?</span>
+                </div>
+                <h2 class="cta-title">Join the <span class="gradient-text">Smart Attendance</span> Revolution</h2>
+                <p class="cta-description">Join thousands of institutions already using AttendIQ to streamline their attendance management and focus on what matters most - education.</p>
+                
+                <div class="cta-benefits">
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Setup in 5 minutes</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>No credit card required</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Full support included</span>
+                    </div>
+                </div>
+                
+                <div class="cta-actions">
+                    <a href="login.html" class="btn btn-primary btn-large">
+                        <span>Start Free Trial</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#demo" class="btn btn-secondary btn-large">
+                        <i class="fas fa-play"></i>
+                        <span>Watch Demo</span>
+                    </a>
+                </div>
+                
+                <div class="cta-trust">
+                    <p>Trusted by 500+ institutions • 99.9% uptime • 24/7 support</p>
+                </div>
+            </div>
+            
+            <div class="cta-visual">
+                <div class="cta-cards">
+                    <div class="cta-card">
+                        <div class="card-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h4>Quick Start</h4>
+                        <p>Get started in minutes</p>
+                    </div>
+                    <div class="cta-card">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Secure</h4>
+                        <p>Enterprise-grade security</p>
+                    </div>
+                    <div class="cta-card">
+                        <div class="card-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4>Support</h4>
+                        <p>24/7 expert support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>AttendIQ</span>
+                    </div>
+                    <p class="footer-description">
+                        Revolutionizing attendance management with AI-powered solutions for modern educational institutions.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Contact</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> info@attendiq.com</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Education St, College City</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AttendIQ. All rights reserved. | Smart Attendance Management System</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>

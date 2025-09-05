@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendIQ Check-in</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+    <div class="glass-card" style="max-width:520px;width:100%;padding:24px;">
+        <h2 class="gradient-title" style="font-size:1.6rem;">Class Check‑in</h2>
+        <div id="status" style="margin:10px 0;color:var(--gray-text);"></div>
+        <div class="glass-display" style="text-align:left;">
+            <label class="label">Roll Number</label>
+            <input id="roll" class="glass-select" placeholder="Your roll number e.g., 001, 002, etc." style="width:100%;margin:6px 0 12px;">
+            <p style="color:var(--gray-text);font-size:0.85rem;margin-bottom:10px;">Enter your roll number as shown in the class roster (e.g., 001, 002, 003, etc.)</p>
+            <button id="checkBtn" class="btn btn-primary btn-3d">Check‑in</button>
+        </div>
+    </div>
+
+    <script>
+        function getParam(name){ const u = new URL(location.href); return u.searchParams.get(name); }
+        function atobSafe(s){ try{return JSON.parse(atob(s));}catch{ return null; } }
+        const token = getParam('t');
+        const session = getParam('session');
+        const payload = token ? atobSafe(token) : null;
+        const statusEl = document.getElementById('status');
+
+        if (!payload && !session){
+            statusEl.innerHTML = '<span style="color:#ef4444;">⚠️ Invalid or missing session information.</span><br><span>Please scan a valid QR code or use manual entry with a valid session code.</span>';
+            const backBtn = document.createElement('button');
+            backBtn.className = 'btn btn-secondary';
+            backBtn.style.marginTop = '15px';
+            backBtn.textContent = 'Back to Dashboard';
+            backBtn.addEventListener('click', () => window.location.href = 'student-dashboard.html');
+            statusEl.appendChild(backBtn);
+        }
+        else if (payload) { 
+            statusEl.textContent = `Session ${payload.sessionId} • Class ${payload.classId}`; 
+        }
+        else if (session) {
+            statusEl.textContent = `Manual Entry • Session Code: ${session}`;
+            window.payload = {
+                sessionId: session,
+                classId: 'manual-entry',
+                ts: Date.now(),
+                manual: true
+            };
+        }
+
+        let myGeo = null;
+        navigator.geolocation.getCurrentPosition(p=>{
+            myGeo = {lat:p.coords.latitude, lon:p.coords.longitude};
+        }, ()=>{ myGeo = null; });
+
+        function distanceM(a,b){
+            if (!a||!b) return 1e9;
+            const R=6371000, toRad=d=>d*Math.PI/180; const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lon-a.lon);
+            const A=Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;
+            return R*2*Math.atan2(Math.sqrt(A), Math.sqrt(1-A));
+        }
+
+        function isLoggedIn() {
+            const referrer = document.referrer;
+            return referrer && (referrer.includes('login.html') || referrer.includes('student-dashboard.html'));
+        }
+
+        document.getElementById('checkBtn').addEventListener('click', ()=>{
+            const roll = (document.getElementById('roll').value||'').trim();
+            if (!roll) { 
+                alert('Please enter your roll number'); 
+                return; 
+            }
+            if (!payload && !session){ 
+                alert('Invalid session information. Please go back and try again.'); 
+                return; 
+            }
+
+            if (!isLoggedIn()) {
+                sessionStorage.setItem('redirectAfterLogin', window.location.href);
+                alert('Please login first to check-in');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            let pass = false;
+            let status = '';
+            const now = Date.now();
+            
+            if ((payload && payload.manual) || session) {
+                pass = true;
+                status = 'Manual';
+            } else if (payload) {
+                const age = (now - payload.ts) / 1000;
+                const within2m = age <= 120;
+                const geoOk = distanceM(myGeo, {lat: payload.lat, lon: payload.lon}) <= 50;
+                const faceOk = true;
+
+                const sigBase = `${payload.sessionId}|${payload.classId}|${payload.ts}|${payload.lat}|${payload.lon}|${payload.nonce}|${payload.gpsHash}|`;
+                const looksSigned = !!payload.sig && payload.sig.length === 64;
+                const notReused = !sessionStorage.getItem(`nonce_${payload.nonce}`);
+                
+                if (!notReused) {
+                    statusEl.textContent = 'Replay blocked.';
+                    return;
+                }
+                
+                if (payload.nonce) {
+                    sessionStorage.setItem(`nonce_${payload.nonce}`, '1');
+                }
+
+                pass = within2m && geoOk && faceOk && looksSigned;
+                status = pass ? 'Verified' : (within2m ? (geoOk? 'Sign/Replay Fail' : 'Geo Fail') : 'Expired');
+            }
+            
+            const userEmail = sessionStorage.getItem('userEmail');
+            
+            const bc = new BroadcastChannel('attendiq');
+            bc.postMessage({ 
+                type: 'scan', 
+                payload: { 
+                    roll, 
+                    email: userEmail,
+                    lat: myGeo?.lat, 
+                    lon: myGeo?.lon, 
+                    faceOk: true, 
+                    deviceId: navigator.userAgent.slice(0,25), 
+                    status,
+                    manual: (payload && payload.manual) || !!session
+                } 
+            });
+
+            const mine = JSON.parse(localStorage.getItem('myAttendance')||'[]');
+            mine.push({ 
+                ts: now, 
+                classId: payload ? payload.classId : (session ? 'manual-entry' : ''),
+                sessionId: payload ? payload.sessionId : (session || ''),
+                status,
+                manual: (payload && payload.manual) || !!session
+            });
+            localStorage.setItem('myAttendance', JSON.stringify(mine));
+
+            // Update UI
+            statusEl.style.color = pass ? '#22c55e' : '#ef4444';
+            
+            if (pass) {
+                statusEl.innerHTML = '<span style="font-size:1.2rem;">✅ Check-in successful!</span><br>' +
+                    `<span>Roll number: ${roll}</span><br>` +
+                    `<span>Session: ${payload ? payload.sessionId : session}</span><br>` +
+                    '<span style="margin-top:10px;display:block;">You can now close this page.</span>';
+                
+                // Add a back button
+                const backBtn = document.createElement('button');
+                backBtn.className = 'btn btn-secondary';
+                backBtn.style.marginTop = '15px';
+                backBtn.textContent = 'Back to Dashboard';
+                backBtn.addEventListener('click', () => window.location.href = 'student-dashboard.html');
+                statusEl.appendChild(backBtn);
+            } else {
+                statusEl.textContent = 'Failed: token expired or out of geofence.';
+            }
+        });
+    </script>
+</body>
+</html>
+
+

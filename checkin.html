@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in - AttendIQ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="checkin-container">
+        <div class="checkin-card glass-card">
+            <div class="checkin-header">
+                <div class="checkin-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h1 class="checkin-title">Attendance Check-in</h1>
+                <p class="checkin-subtitle">Mark your attendance for this session</p>
+            </div>
+
+            <div id="sessionInfo" class="session-info" style="display: none;">
+                <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span id="className"></span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="roomNumber"></span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="sessionTime"></span>
+                </div>
+            </div>
+
+            <div id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentRoll">Roll Number</label>
+                    <input type="text" id="studentRoll" placeholder="Enter your roll number" required>
+                </div>
+                <button id="checkinBtn" class="btn btn-primary btn-3d btn-large">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Mark Attendance</span>
+                </button>
+            </div>
+
+            <div id="successMessage" class="success-message" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Attendance Marked Successfully!</h2>
+                <p>Your attendance has been recorded for this session.</p>
+                <div class="success-details">
+                    <p><strong>Class:</strong> <span id="successClassName"></span></p>
+                    <p><strong>Time:</strong> <span id="successTime"></span></p>
+                    <p><strong>Status:</strong> <span class="status-badge present">PRESENT</span></p>
+                </div>
+                <button id="backToDashboard" class="btn btn-secondary btn-3d">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Dashboard</span>
+                </button>
+            </div>
+
+            <div id="errorMessage" class="error-message" style="display: none;">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>Check-in Failed</h2>
+                <p id="errorText">Unable to mark attendance. Please try again.</p>
+                <button id="tryAgainBtn" class="btn btn-primary btn-3d">
+                    <i class="fas fa-redo"></i>
+                    <span>Try Again</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sessionData = null;
+
+        // Parse URL parameters
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                session: params.get('session'),
+                class: params.get('class'),
+                room: params.get('room')
+            };
+        }
+
+        // Load session data
+        function loadSessionData() {
+            const params = getUrlParams();
+            
+            if (!params.session || !params.class || !params.room) {
+                showError('Invalid session data. Please scan the QR code again.');
+                return;
+            }
+
+            sessionData = {
+                sessionId: params.session,
+                className: decodeURIComponent(params.class),
+                roomNumber: decodeURIComponent(params.room),
+                timestamp: new Date()
+            };
+
+            // Display session info
+            document.getElementById('className').textContent = sessionData.className;
+            document.getElementById('roomNumber').textContent = sessionData.roomNumber;
+            document.getElementById('sessionTime').textContent = sessionData.timestamp.toLocaleString();
+            document.getElementById('sessionInfo').style.display = 'block';
+        }
+
+        // Mark attendance
+        function markAttendance() {
+            const studentName = document.getElementById('studentName').value.trim();
+            const studentRoll = document.getElementById('studentRoll').value.trim();
+
+            if (!studentName || !studentRoll) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Show loading state
+            const checkinBtn = document.getElementById('checkinBtn');
+            checkinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Processing...</span>';
+            checkinBtn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                try {
+                    // Save attendance data
+                    const attendanceRecord = {
+                        sessionId: sessionData.sessionId,
+                        className: sessionData.className,
+                        roomNumber: sessionData.roomNumber,
+                        studentName: studentName,
+                        studentRoll: studentRoll,
+                        timestamp: sessionData.timestamp,
+                        status: 'present'
+                    };
+
+                    // Save to localStorage
+                    const myAttendance = JSON.parse(localStorage.getItem('myAttendance') || '[]');
+                    myAttendance.push(attendanceRecord);
+                    localStorage.setItem('myAttendance', JSON.stringify(attendanceRecord));
+
+                    // Update faculty session (if available)
+                    updateFacultySession(attendanceRecord);
+
+                    // Show success
+                    showSuccess(attendanceRecord);
+                } catch (error) {
+                    showError('Failed to save attendance. Please try again.');
+                }
+            }, 1500);
+        }
+
+        // Update faculty session
+        function updateFacultySession(attendanceRecord) {
+            try {
+                const currentSession = JSON.parse(localStorage.getItem('currentSession'));
+                if (currentSession && currentSession.id === attendanceRecord.sessionId) {
+                    // Find student in faculty session and mark as present
+                    const student = currentSession.students.find(s => 
+                        s.rollNo === attendanceRecord.studentRoll || 
+                        s.name.toLowerCase() === attendanceRecord.studentName.toLowerCase()
+                    );
+                    
+                    if (student) {
+                        student.status = 'present';
+                        localStorage.setItem('currentSession', JSON.stringify(currentSession));
+                    }
+                }
+            } catch (error) {
+                console.log('Could not update faculty session');
+            }
+        }
+
+        // Show success message
+        function showSuccess(attendanceRecord) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('sessionInfo').style.display = 'none';
+            
+            document.getElementById('successClassName').textContent = attendanceRecord.className;
+            document.getElementById('successTime').textContent = attendanceRecord.timestamp.toLocaleString();
+            
+            document.getElementById('successMessage').style.display = 'block';
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('loginForm').style.display = 'none';
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSessionData();
+            
+            document.getElementById('checkinBtn').addEventListener('click', markAttendance);
+            document.getElementById('backToDashboard').addEventListener('click', () => {
+                window.location.href = 'student-dashboard.html';
+            });
+            document.getElementById('tryAgainBtn').addEventListener('click', () => {
+                location.reload();
+            });
+        });
+    </script>
+
+    <style>
+        .checkin-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .checkin-card {
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .checkin-header {
+            margin-bottom: 30px;
+        }
+
+        .checkin-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .checkin-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .checkin-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .session-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .info-item i {
+            color: #667eea;
+            font-size: 1.2rem;
+            width: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+
+        .success-message, .error-message {
+            text-align: center;
+        }
+
+        .success-icon, .error-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .success-icon {
+            color: #4CAF50;
+        }
+
+        .error-icon {
+            color: #f44336;
+        }
+
+        .success-details {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-badge.present {
+            background: #4CAF50;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .checkin-card {
+                padding: 30px 20px;
+            }
+            
+            .checkin-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</body>
+</html>
