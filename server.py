@@ -63,6 +63,9 @@ def process():
 		adaptive_c = int(request.form.get("adaptive_c", 5))
 		deskew = request.form.get("deskew") == "on"
 		crop_table = request.form.get("crop_table") == "on"
+		remove_shadow = request.form.get("remove_shadow") == "on"
+		clahe_clip = float(request.form.get("clahe_clip", 0))
+		denoise_strength = int(request.form.get("denoise_strength", 0))
 
 		if not files or all(f.filename == '' for f in files):
 			flash("Please upload at least one file.", "error")
@@ -100,6 +103,9 @@ def process():
 					adaptive_block=adaptive_block,
 					adaptive_c=adaptive_c,
 					deskew=deskew,
+					remove_shadow=remove_shadow,
+					clahe_clip=clahe_clip,
+					denoise_strength=denoise_strength,
 				)
 				if crop_table:
 					cv_processed = detect_and_crop_table_region(cv_processed)
@@ -138,6 +144,9 @@ def process():
 				adaptive_c=adaptive_c,
 				deskew=deskew,
 				crop_table=crop_table,
+				remove_shadow=remove_shadow,
+				clahe_clip=clahe_clip,
+				denoise_strength=denoise_strength,
 			),
 		)
 	except Exception as e:

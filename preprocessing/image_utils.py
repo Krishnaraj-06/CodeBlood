@@ -30,11 +30,14 @@ def deskew_image(gray: np.ndarray) -> np.ndarray:
 
 
 def preprocess_image(
-	img_bgr: np.ndarray,
-	resize_width: int = 1500,
-	adaptive_block: int = 35,
-	adaptive_c: int = 5,
-	deskew: bool = True,
+    img_bgr: np.ndarray,
+    resize_width: int = 1500,
+    adaptive_block: int = 35,
+    adaptive_c: int = 5,
+    deskew: bool = True,
+    remove_shadow: bool = False,
+    clahe_clip: float = 0.0,
+    denoise_strength: int = 0,
 ) -> np.ndarray:
 	# Resize proportionally
 	h, w = img_bgr.shape[:2]
@@ -44,8 +47,28 @@ def preprocess_image(
 	# Grayscale
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-	# Gaussian blur to reduce noise
-	blur = cv2.GaussianBlur(gray, (3, 3), 0)
+	# Optional shadow removal (illumination correction)
+	if remove_shadow:
+		# Estimate background illumination using morphological opening
+		kernel_size = max(15, int(min(gray.shape[:2]) * 0.03))
+		if kernel_size % 2 == 0:
+			kernel_size += 1
+		kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+		background = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
+		# Avoid division by zero
+		background = np.clip(background, 1, 255)
+		gray = cv2.divide(gray, background, scale=255)
+
+	# Optional CLAHE contrast enhancement
+	if clahe_clip and clahe_clip > 0:
+		clahe = cv2.createCLAHE(clipLimit=float(clahe_clip), tileGridSize=(8, 8))
+		gray = clahe.apply(gray)
+
+	# Denoise
+	if denoise_strength and denoise_strength > 0:
+		blur = cv2.fastNlMeansDenoising(gray, None, h=int(denoise_strength), templateWindowSize=7, searchWindowSize=21)
+	else:
+		blur = cv2.GaussianBlur(gray, (3, 3), 0)
 
 	# Deskew on binary-friendly version
 	if deskew:
