@@ -38,5 +38,3 @@ python server.py
 ```
 
 The Flask app serves a Tailwind-based dashboard with file upload, preprocessing, previews, KPI cards, and ZIP download.
-
-
