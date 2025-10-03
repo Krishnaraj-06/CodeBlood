@@ -47,55 +47,115 @@ def preprocess_image(
 	# Grayscale
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-	# Optional shadow removal (illumination correction)
+	# Simple but effective shadow removal
 	if remove_shadow:
-		# Estimate background illumination using morphological opening
-		kernel_size = max(15, int(min(gray.shape[:2]) * 0.03))
-		if kernel_size % 2 == 0:
-			kernel_size += 1
-		kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
-		background = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
-		# Avoid division by zero
-		background = np.clip(background, 1, 255)
-		gray = cv2.divide(gray, background, scale=255)
+		try:
+			# Use single kernel for reliable shadow removal
+			kernel_size = max(25, int(min(gray.shape[:2]) * 0.05))
+			if kernel_size % 2 == 0:
+				kernel_size += 1
+			kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+			background = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
+			# Ensure minimum background value
+			background = np.maximum(background, 5)
+			# Apply illumination correction
+			normalized = cv2.divide(gray, background, scale=255)
+			normalized = np.clip(normalized, 0, 255)
+			# Conservative blending
+			gray = cv2.addWeighted(normalized, 0.7, gray, 0.3, 0).astype(np.uint8)
+		except:
+			pass
 
-	# Optional CLAHE contrast enhancement
+	# Moderate CLAHE for better contrast
 	if clahe_clip and clahe_clip > 0:
-		clahe = cv2.createCLAHE(clipLimit=float(clahe_clip), tileGridSize=(8, 8))
-		gray = clahe.apply(gray)
-
-	# Denoise
-	if denoise_strength and denoise_strength > 0:
-		blur = cv2.fastNlMeansDenoising(gray, None, h=int(denoise_strength), templateWindowSize=7, searchWindowSize=21)
+		clip_value = float(clahe_clip)
 	else:
-		blur = cv2.GaussianBlur(gray, (3, 3), 0)
+		clip_value = 2.0  # Moderate enhancement
+	try:
+		clahe = cv2.createCLAHE(clipLimit=clip_value, tileGridSize=(8, 8))
+		gray = clahe.apply(gray)
+	except:
+		pass
+
+	# Professional denoising for document quality
+	if denoise_strength and denoise_strength > 0:
+		try:
+			blur = cv2.fastNlMeansDenoising(gray, None, h=int(denoise_strength), templateWindowSize=7, searchWindowSize=21)
+		except:
+			# Use bilateral filter for better edge preservation
+			blur = cv2.bilateralFilter(gray, 5, 50, 50)
+	else:
+		# Use bilateral filter to preserve text edges
+		blur = cv2.bilateralFilter(gray, 5, 50, 50)
 
 	# Deskew on binary-friendly version
 	if deskew:
-		# Use OTSU for angle estimation
-		_, th = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-		rot = deskew_image(th)
-		# Map rotation back to original gray via same transform is heavy; acceptable to reuse rot
-		work = rot
+		try:
+			# Use OTSU for angle estimation
+			_, th = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+			rot = deskew_image(th)
+			work = rot
+		except:
+			work = blur
 	else:
 		work = blur
 
-	# Adaptive threshold for robust binarization
-	binary = cv2.adaptiveThreshold(
-		work,
-		255,
-		cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-		cv2.THRESH_BINARY,
-		adaptive_block if adaptive_block % 2 == 1 else adaptive_block + 1,
-		adaptive_c,
-	)
+	# Optimized adaptive threshold for crisp text
+	try:
+		# Use optimized block size for document quality
+		block_size = max(11, adaptive_block if adaptive_block % 2 == 1 else adaptive_block + 1)
+		binary = cv2.adaptiveThreshold(
+			work,
+			255,
+			cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+			cv2.THRESH_BINARY,
+			block_size,
+			adaptive_c,
+		)
+	except:
+		# Fallback to OTSU with proper parameters
+		_, binary = cv2.threshold(work, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-	# Morphological open to remove salt-and-pepper
-	kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
-	clean = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel, iterations=1)
+	# Professional morphological cleaning for document quality
+	try:
+		# Step 1: Remove small noise
+		kernel_noise = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
+		clean1 = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel_noise, iterations=1)
+		
+		# Step 2: Close small gaps in characters
+		kernel_close = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+		clean = cv2.morphologyEx(clean1, cv2.MORPH_CLOSE, kernel_close, iterations=1)
+	except:
+		clean = binary
+	
+	# Professional sharpening for crisp text
+	try:
+		# Use unsharp masking for professional results
+		kernel_sharp = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+		sharpened = cv2.filter2D(clean, -1, kernel_sharp)
+		sharpened = np.clip(sharpened, 0, 255).astype(np.uint8)
+		
+		# Apply unsharp mask for professional sharpening
+		gaussian = cv2.GaussianBlur(sharpened, (0, 0), 1.5)
+		unsharp_mask = cv2.addWeighted(sharpened, 1.3, gaussian, -0.3, 0)
+		sharpened = np.clip(unsharp_mask, 0, 255).astype(np.uint8)
+	except:
+		sharpened = clean
 
-	# Return 3-channel BGR for consistent display pipeline
-	return cv2.cvtColor(clean, cv2.COLOR_GRAY2BGR)
+	# Return colored output - keep original colors with enhanced clarity
+	# Use the original resized image as base and apply processing as enhancement
+	enhanced_original = img.copy()
+	
+	# Convert sharpened to 3-channel for blending
+	sharpened_3ch = cv2.cvtColor(sharpened, cv2.COLOR_GRAY2BGR)
+	
+	# Blend original colors with enhanced processing (60% original, 40% processed)
+	final_output = cv2.addWeighted(enhanced_original, 0.6, sharpened_3ch, 0.4, 0)
+	
+	# Ensure proper color range
+	final_output = np.clip(final_output, 0, 255).astype(np.uint8)
+	
+	return final_output
 
 
 def detect_and_crop_table_region(img_bgr: np.ndarray) -> np.ndarray:

@@ -15,9 +15,10 @@ from preprocessing.image_utils import (
 	preprocess_image,
 	detect_and_crop_table_region,
 )
+from config import PREPROCESSING, APP_NAME
 
 
-APP_NAME = "AudtiFlow"
+# APP_NAME imported from config
 RUNS_DIR = os.path.join("static", "runs")
 os.makedirs(RUNS_DIR, exist_ok=True)
 
@@ -50,7 +51,16 @@ def dashboard():
 		input_images=[],
 		cleaned_images=[],
 		run_id=None,
-		settings=dict(resize_width=1500, adaptive_block=35, adaptive_c=5, deskew=True, crop_table=True),
+		settings=dict(
+			resize_width=PREPROCESSING["resize_width"],
+			adaptive_block=PREPROCESSING["adaptive_block"],
+			adaptive_c=PREPROCESSING["adaptive_c"],
+			deskew=PREPROCESSING["deskew"],
+			crop_table=PREPROCESSING["crop_table"],
+			remove_shadow=PREPROCESSING["remove_shadow"],
+			clahe_clip=PREPROCESSING["clahe_clip"],
+			denoise_strength=PREPROCESSING["denoise_strength"]
+		),
 	)
 
 
@@ -63,7 +73,7 @@ def process():
 		adaptive_c = int(request.form.get("adaptive_c", 5))
 		deskew = request.form.get("deskew") == "on"
 		crop_table = request.form.get("crop_table") == "on"
-		remove_shadow = request.form.get("remove_shadow") == "on"
+		remove_shadow = request.form.get("remove_shadow", "on") == "on"
 		clahe_clip = float(request.form.get("clahe_clip", 0))
 		denoise_strength = int(request.form.get("denoise_strength", 0))
 
@@ -107,8 +117,9 @@ def process():
 					clahe_clip=clahe_clip,
 					denoise_strength=denoise_strength,
 				)
-				if crop_table:
-					cv_processed = detect_and_crop_table_region(cv_processed)
+				# Disable cropping to preserve full image
+				# if crop_table:
+				#	cv_processed = detect_and_crop_table_region(cv_processed)
 				cleaned_pages.append(convert_cv_to_pil(cv_processed))
 			except Exception as e:
 				flash(f"Image processing error: {str(e)}", "error")

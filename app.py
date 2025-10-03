@@ -14,11 +14,12 @@ from preprocessing.image_utils import (
 	preprocess_image,
 	detect_and_crop_table_region,
 )
+from config import PREPROCESSING, APP_NAME
 
 
 def ensure_page_config() -> None:
 	st.set_page_config(
-		page_title="Attendance Preprocessing Dashboard",
+		page_title=f"{APP_NAME} - Attendance Processing Dashboard",
 		page_icon="📄",
 		layout="wide",
 	)
@@ -36,24 +37,24 @@ def sidebar_settings() -> dict:
 		os.environ["POPPLER_PATH"] = poppler_path
 
 	resize_width = st.sidebar.number_input(
-		"Resize width (px)", min_value=600, max_value=3000, value=1500, step=50
+		"Resize width (px)", min_value=600, max_value=3000, value=PREPROCESSING["resize_width"], step=50
 	)
 	threshold_block = st.sidebar.slider(
 		"Adaptive threshold block size",
 		min_value=11,
 		max_value=101,
-		value=35,
+		value=PREPROCESSING["adaptive_block"],
 		step=2,
 	)
 	threshold_c = st.sidebar.slider(
 		"Adaptive threshold C",
 		min_value=-20,
 		max_value=20,
-		value=5,
+		value=PREPROCESSING["adaptive_c"],
 		step=1,
 	)
-	deskew_enabled = st.sidebar.checkbox("Deskew image", value=True)
-	crop_table = st.sidebar.checkbox("Detect & crop table region", value=True)
+	deskew_enabled = st.sidebar.checkbox("Deskew image", value=PREPROCESSING["deskew"])
+	crop_table = st.sidebar.checkbox("Detect & crop table region", value=PREPROCESSING["crop_table"])
 
 	return dict(
 		poppler_path=poppler_path,
