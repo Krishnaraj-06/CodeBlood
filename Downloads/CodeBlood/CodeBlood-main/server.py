@@ -311,11 +311,71 @@ def ocr_batch(run_id: str):
 			uploads_csv_path = os.path.join(UPLOAD_FOLDER, 'attendance.csv')
 			shutil.copyfile(out_csv, uploads_csv_path)
 			df = pd.read_csv(out_csv)
+			
+			# Add Present (P) and Absent (A) counts and Defaulter column
+			attendance_cols = df.columns.difference(['Roll', 'StudentID', 'Name'])
+			df['Present Count'] = df[attendance_cols].apply(lambda row: (row == 'P').sum(), axis=1)
+			df['Absent Count'] = df[attendance_cols].apply(lambda row: (row == 'A').sum(), axis=1)
+			# Mark defaulter if absent count > 3 (threshold can be adjusted)
+			df['Defaulter'] = df['Absent Count'].apply(lambda x: 'Yes' if x > 3 else 'No')
+			
+			# Calculate attendance percentage
+			total_classes = len(attendance_cols)
+			df['Attendance %'] = (df['Present Count'] / total_classes) * 100
+
+			# Save as Excel with conditional formatting for row colors
+			import openpyxl
+			from openpyxl.styles import PatternFill
+			from openpyxl.utils.dataframe import dataframe_to_rows
+
+			excel_path = os.path.splitext(out_csv)[0] + '.xlsx'
+			wb = openpyxl.Workbook()
+			ws = wb.active
+			ws.title = "Attendance"
+
+			# Write dataframe to worksheet
+			for r_idx, row in enumerate(dataframe_to_rows(df, index=False, header=True), 1):
+				for c_idx, value in enumerate(row, 1):
+					ws.cell(row=r_idx, column=c_idx, value=value)
+
+			# Define fills
+			yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+			orange_fill = PatternFill(start_color="FFA500", end_color="FFA500", fill_type="solid")
+			red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+
+			# Apply conditional formatting to rows based on Attendance %
+			att_col_idx = df.columns.get_loc('Attendance %') + 1  # 1-based index
+			for row in range(2, ws.max_row + 1):
+				att_value = ws.cell(row=row, column=att_col_idx).value
+				if att_value is None:
+					continue
+				if att_value < 30:
+					fill = red_fill
+				elif att_value < 50:
+					fill = orange_fill
+				elif 50 <= att_value <= 70:
+					fill = yellow_fill
+				else:
+					fill = None
+				if fill:
+					for col in range(1, ws.max_column + 1):
+						ws.cell(row=row, column=col).fill = fill
+
+			wb.save(excel_path)
+
+			# Save updated CSV and Excel to uploads folder
+			import shutil
+			uploads_csv_path = os.path.join(UPLOAD_FOLDER, 'attendance.csv')
+			uploads_excel_path = os.path.join(UPLOAD_FOLDER, 'attendance.xlsx')
+			shutil.copyfile(out_csv, uploads_csv_path)
+			shutil.copyfile(excel_path, uploads_excel_path)
+
 			table_html = df.to_html(classes='table table-striped table-bordered', index=False)
 			results.append({
 				'image_url': '/' + os.path.join(cleaned_dir, fname).replace('\\', '/'),
 				'csv_name': csv_name,
 				'csv_url': url_for('download_csv_file', run_id=run_id, filename=csv_name),
+				'excel_url': url_for('download_excel_file', run_id=run_id, filename=os.path.basename(excel_path)),
 				'total_students': len(df),
 				'title': fname,
 				'table': table_html,
@@ -380,6 +440,13 @@ def download_csv_file(run_id: str, filename: str):
 		return redirect(url_for('ocr_batch', run_id=run_id))
 	return send_from_directory(csv_dir, filename, as_attachment=True)
 
+@app.route('/download/excel/<run_id>/<path:filename>', methods=['GET'])
+def download_excel_file(run_id: str, filename: str):
+	"""Download a single Excel file for a given run."""
+	csv_dir = os.path.join(RUNS_DIR, run_id, 'csv')
+	if not os.path.isfile(os.path.join(csv_dir, filename)):
+		return redirect(url_for('ocr_batch', run_id=run_id))
+	return send_from_directory(csv_dir, filename, as_attachment=True)
 
 @app.route('/download/csv-zip/<run_id>', methods=['GET'])
 def download_csv_zip(run_id: str):
@@ -397,6 +464,34 @@ def download_csv_zip(run_id: str):
 	buffer.seek(0)
 	return send_file(buffer, as_attachment=True, download_name=f'{run_id}_csvs.zip', mimetype='application/zip')
 
+
+from flask import jsonify
+
+@app.route('/attendance-data/<run_id>', methods=['GET'])
+def attendance_data(run_id: str):
+	csv_dir = os.path.join(RUNS_DIR, run_id, 'csv')
+	if not os.path.isdir(csv_dir):
+		return jsonify({'error': 'Invalid run ID or no data found'}), 404
+
+	# Find the first CSV file in the csv_dir
+	csv_files = [f for f in os.listdir(csv_dir) if f.lower().endswith('.csv')]
+	if not csv_files:
+		return jsonify({'error': 'No CSV files found for this run'}), 404
+
+	csv_path = os.path.join(csv_dir, csv_files[0])
+	try:
+		df = pd.read_csv(csv_path)
+		attendance_cols = df.columns.difference(['Roll', 'StudentID', 'Name', 'Present Count', 'Absent Count', 'Defaulter', 'Attendance %'])
+
+		tp=df[attendance_cols].apply(lambda x: (x == 'P').sum()).sum()
+		ta=df[attendance_cols].apply(lambda x: (x == 'A').sum()).sum()
+		total=240
+		total_present = (tp/total)*100
+		total_absent = (ta/total)*100
+		
+		return jsonify({'presentCount': int(total_present), 'absentCount': int(total_absent)})
+	except Exception as e:
+		return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
 	port = int(os.environ.get("PORT", 8501))

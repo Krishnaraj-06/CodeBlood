@@ -1,4 +1,4 @@
-"""Configuration file for AudtiFlow"""
+"""Configuration file for AuditFlow"""
 import os
 from pathlib import Path
 
@@ -14,7 +14,7 @@ for directory in [DATA_DIR, OUTPUT_DIR, RUNS_DIR]:
     directory.mkdir(parents=True, exist_ok=True)
 
 # Application settings
-APP_NAME = "AudtiFlow"
+APP_NAME = "AuditFlow"
 APP_VERSION = "1.0.0"
 DEPARTMENT = "Computer Engineering"
 ACADEMIC_YEAR = "2025-2026"
